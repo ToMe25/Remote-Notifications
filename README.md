@@ -1,7 +1,9 @@
 # Remote-Notifications
 A simple Program/Library to create popup notifications on one device from another device.
 
-# Usage
+![Maven Build and Publish](https://github.com/ToMe25/Remote-Notifications/workflows/Maven%20Build%20and%20Publish/badge.svg)
+
+## Usage
 Remote-Notifications can either be used in the command line by starting a client with
 `java -jar Remote-Notifications-VERSION.jar`
 and sending a notifications with

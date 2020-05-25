@@ -43,7 +43,7 @@
     <dependency>
       <groupId>com.tome25.ToMe25s-Java-Utilities</groupId>
       <artifactId>ToMe25s-Java-Utilities</artifactId>
-      <version>1.0.119</version>
+      <version>1.0.120</version>
     </dependency>
   </dependencies>
 
