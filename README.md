@@ -21,6 +21,11 @@ RemoteNotifications.sender.send(HEADER, MESSAGE);
 to send a notification to the client set in the config file.
 If you for some reason want to change the client from code, you can do that with
 ```java
-RemoteNotifications.config.clientAddress = ADDRESS;
+RemoteNotifications.config.setConfig("client-address", ADDRESS);
 ```
-this wont change the config file tho.
+for the address and
+```java
+RemoteNotifications.config.setConfig("client-port", PORT);
+```
+for the port.
+This will be written to the config file.

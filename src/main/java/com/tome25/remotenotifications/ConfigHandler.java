@@ -33,8 +33,9 @@ public class ConfigHandler {
 	private void initClientConfig() {
 		config.addConfig("client.cfg", "notification-style", "TrayIcon_none",
 				"The style of notification you want to see when receiving some notification to display.",
-				"Valid Options are: TrayIcon_none, TrayIcon_info, TrayIcon_warning, TrayIcon_error.");
-		config.addConfig("client.cfg", "notification-time", 300,
+				"Valid Options are: TrayIcon_none, TrayIcon_info, TrayIcon_warning, TrayIcon_error,",
+				"Dialog_light_frameless, Dialog_dark_frameless, Dialog_light_framed, Dialog_dark_framed.");
+		config.addConfig("client.cfg", "notification-time", 10,
 				"Some notification styles have a limited lifetime after which they dissappear, this setting controls that time. In seconds.");
 		config.addConfig("client.cfg", "port", 3112, "The port to listen on for notifications.");
 		config.readConfig();
@@ -53,6 +54,18 @@ public class ConfigHandler {
 		config.readConfig();
 		clientAddress = (String) config.getConfig("client-address");
 		port = (int) config.getConfig("client-port");
+	}
+
+	/**
+	 * Sets the given config option to the given value. Will be synchronized to the
+	 * config file.
+	 * 
+	 * @param <T>    the type of the value.
+	 * @param option the option to set.
+	 * @param value  the value to set the option to.
+	 */
+	public <T> void setConfig(String option, T value) {
+		config.setConfig(option, value);
 	}
 
 }
