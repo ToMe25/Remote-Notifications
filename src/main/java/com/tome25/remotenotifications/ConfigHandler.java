@@ -76,7 +76,7 @@ public class ConfigHandler {
 			RemoteNotifications.sender.setAddress((String) value);
 		}
 		if (option.equals("client-port") && RemoteNotifications.sender != null) {
-			RemoteNotifications.sender.setPort((int) value);
+			RemoteNotifications.sender.setPort((Integer) value);
 		}
 	}
 
