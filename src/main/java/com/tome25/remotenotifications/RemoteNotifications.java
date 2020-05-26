@@ -8,6 +8,7 @@ import com.tome25.remotenotifications.network.Receiver;
 import com.tome25.remotenotifications.network.Sender;
 import com.tome25.utils.lib.LibraryDownloader;
 import com.tome25.utils.lib.LibraryLoader;
+import com.tome25.utils.version.VersionControl;
 
 /**
  * A Tool to create popup notifications from another Device.
@@ -61,6 +62,9 @@ public class RemoteNotifications {
 					e.printStackTrace();
 				}
 			}
+		} else if (arguments.containsKey("version") && arguments.get("version").equalsIgnoreCase("true")) {
+			System.out.println("Remote-Notifications version info");
+			printVersionInfo();
 		} else {
 			initClient();
 			if (arguments.containsKey("udpport")) {
@@ -110,11 +114,13 @@ public class RemoteNotifications {
 	 */
 	public static void printHelp() {
 		System.out.println("Remote-Notifications help");
-		System.out.println("=========================");
+		printVersionInfo();
 		File codeSource = new File(
 				RemoteNotifications.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-		System.out.format("java -jar %s [OPTIONS]%n", codeSource.getName());
-		System.out.println("-------------------------");
+		String syntax = String.format("java -jar %s [OPTIONS]", codeSource.getName());
+		System.out.println(String.format("%1$" + syntax.length() + "s", "").replace(" ", "="));
+		System.out.println(syntax);
+		System.out.println(String.format("%1$" + syntax.length() + "s", "").replace(" ", "-"));
 		printOptionsHelp();
 	}
 
@@ -129,11 +135,13 @@ public class RemoteNotifications {
 				"Runs this program in server mode, meaning it will send notifications.%nThis will not work without -header and -message."));
 		optionsHelp.put("header=HEADER", "The header to send to the client. Only works in server mode.");
 		optionsHelp.put("message=MESSAGE", "The message for the notification to send. Only works in server mode.");
-		optionsHelp.put("address=ADDRESS", String.format("The address to send the notification to. Only works in server mode.%nDefault is \"localhost\"."));
+		optionsHelp.put("address=ADDRESS", String.format(
+				"The address to send the notification to. Only works in server mode.%nDefault is \"localhost\"."));
 		optionsHelp.put("udpport=PORT", String.format(
 				"The port to use for udp.%nOn the server this is the target port, on the client its the port to listen on.%nSet to 0 to disable udp. Default is 3112."));
 		optionsHelp.put("tcpport=PORT", String.format(
 				"The port to use for tcp.%nOn the server this is the target port, on the client its the port to listen on.%nSet to 0 to disable tcp. Default is 3113."));
+		optionsHelp.put("version", "Prints version info and stops.");
 		Map<String, String> optionsHelp1 = new LinkedHashMap<String, String>();
 		final int[] length = new int[] { 0 };
 		optionsHelp.keySet().forEach(key -> {
@@ -158,5 +166,18 @@ public class RemoteNotifications {
 			value = value.replaceAll("\n", String.format("\n%1$" + (length[0] + 3) + "s", ""));
 			System.out.format("  %s %s%n", key, value);
 		});
+	}
+
+	/**
+	 * Prints version info to the system output.
+	 */
+	public static void printVersionInfo() {
+		String remoteNotificationsVersion = "Remote-Notifications-Version: " + VersionChecker.getVersionString();
+		String tome25sJavaUtilitiesVersion = "ToMe25s-Java-Utilities-Version: " + VersionControl.getVersionString();
+		System.out.println(String.format(
+				"%1$" + Math.max(remoteNotificationsVersion.length(), tome25sJavaUtilitiesVersion.length()) + "s", "")
+				.replace(" ", "="));
+		System.out.println(remoteNotificationsVersion);
+		System.out.println(tome25sJavaUtilitiesVersion);
 	}
 }

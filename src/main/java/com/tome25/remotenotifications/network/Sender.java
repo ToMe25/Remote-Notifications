@@ -1,6 +1,5 @@
 package com.tome25.remotenotifications.network;
 
-import java.io.IOException;
 import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -8,6 +7,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.function.Consumer;
 
 import com.tome25.utils.json.JsonElement;
 import com.tome25.utils.json.JsonObject;
@@ -49,9 +49,8 @@ public class Sender {
 	 * 
 	 * @param header  the notification header.
 	 * @param message the notification message.
-	 * @throws IOException if sending the packet fails.
 	 */
-	public void send(String header, String message) throws IOException {
+	public void send(String header, String message) {
 		JsonObject json = new JsonObject("message", message);
 		json.add("header", header);
 		send(json);
@@ -62,9 +61,23 @@ public class Sender {
 	 * 
 	 * @param message the message to send. should be
 	 *                '{"header":"HEADER","message":"MESSAGE"}'
-	 * @throws IOException if sending the packet fails.
 	 */
-	public void send(JsonElement message) throws IOException {
+	public void send(JsonElement message) {
+		send(message, e -> {
+			if (!(e instanceof ConnectException) || (udpPort < 1 || tcpPort < 1)) {
+				e.printStackTrace();
+			}
+		});
+	}
+
+	/**
+	 * Sends the given json object to this senders target.
+	 * 
+	 * @param message          the message to send. should be
+	 *                         '{"header":"HEADER","message":"MESSAGE"}'
+	 * @param exceptionHandler a consumer that handles exceptions if any occur.
+	 */
+	public void send(JsonElement message, Consumer<Exception> exceptionHandler) {
 		if (tcpPort > 0) {
 			try {
 				Socket tcpSocket = new Socket(address, tcpPort);
@@ -72,17 +85,19 @@ public class Sender {
 				tcpSocket.close();
 				return;
 			} catch (Exception e) {
-				if (!(e instanceof ConnectException)) {
-					e.printStackTrace();
-				}
+				exceptionHandler.accept(e);
 			}
 		}
 		if (udpPort > 0) {
-			if (packet == null) {
-				packet = new DatagramPacket(new byte[1024], 1024, InetAddress.getByName(address), udpPort);
+			try {
+				if (packet == null) {
+					packet = new DatagramPacket(new byte[1024], 1024, InetAddress.getByName(address), udpPort);
+				}
+				packet.setData(message.toByteArray());
+				udpSocket.send(packet);
+			} catch (Exception e) {
+				exceptionHandler.accept(e);
 			}
-			packet.setData(message.toByteArray());
-			udpSocket.send(packet);
 		}
 	}
 
