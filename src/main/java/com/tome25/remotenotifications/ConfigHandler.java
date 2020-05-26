@@ -15,7 +15,8 @@ public class ConfigHandler {
 
 	private final Config config;
 	public String clientAddress;
-	public int port;
+	public int udpPort;
+	public int tcpPort;
 
 	/**
 	 * creates a new ConfigHandler.
@@ -43,11 +44,15 @@ public class ConfigHandler {
 				"Dialog_light_frameless, Dialog_dark_frameless, Dialog_light_framed, Dialog_dark_framed.");
 		config.addConfig("client.cfg", "notification-time", 10,
 				"Some notification styles have a limited lifetime after which they dissappear, this setting controls that time. In seconds.");
-		config.addConfig("client.cfg", "port", 3112, "The port to listen on for notifications.");
+		config.addConfig("client.cfg", "udp-port", 3112,
+				"The port to listen on for notifications that are sent over udp.", "Set to 0 to disable udp handling.");
+		config.addConfig("client.cfg", "tcp-port", 3113,
+				"The port to listen on for notifications that are sent over tcp.", "Set to 0 to disable tcp handling.");
 		config.readConfig();
 		NotificationHandler.setNotification((String) config.getConfig("notification-style"));
 		NotificationHandler.setNotificationTime((int) config.getConfig("notification-time"));
-		port = (int) config.getConfig("port");
+		udpPort = (int) config.getConfig("udp-port");
+		tcpPort = (int) config.getConfig("tcp-port");
 	}
 
 	/**
@@ -56,10 +61,18 @@ public class ConfigHandler {
 	private void initServerConfig() {
 		config.addConfig("server.cfg", "client-address", "localhost",
 				"The address of the device that should receive the notifications.");
-		config.addConfig("server.cfg", "client-port", 3112, "The port of the client to send notifications to.");
+		config.addConfig("server.cfg", "client-udp-port", 3112,
+				"The port of the client to send notifications to over udp.",
+				"The server will only send notifications over udp if tcp is disabled, or the transmission fails.",
+				"Set to 0 to disable udp sending.");
+		config.addConfig("server.cfg", "client-tcp-port", 3113,
+				"The port of the client to send notifications to over tcp.",
+				"The server will try to send notifications over tcp first, and fall back to udp if that fails.",
+				"Set to 0 to disable tcp sending.");
 		config.readConfig();
 		clientAddress = (String) config.getConfig("client-address");
-		port = (int) config.getConfig("client-port");
+		udpPort = (int) config.getConfig("client-udp-port");
+		tcpPort = (int) config.getConfig("client-tcp-port");
 	}
 
 	/**

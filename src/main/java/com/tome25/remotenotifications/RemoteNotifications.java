@@ -66,7 +66,7 @@ public class RemoteNotifications {
 	public static void initServer() {
 		try {
 			config = new ConfigHandler(true);
-			sender = new Sender(config.port, config.clientAddress);
+			sender = new Sender(config.clientAddress, config.udpPort, config.tcpPort);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -79,7 +79,7 @@ public class RemoteNotifications {
 		try {
 			icon = new TrayIconManager();
 			config = new ConfigHandler(false);
-			receiver = new Receiver(config.port);
+			receiver = new Receiver(config.udpPort, config.tcpPort);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
