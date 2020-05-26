@@ -36,9 +36,13 @@ If you for some reason want to change the client from code, you can do that with
 ```java
 RemoteNotifications.config.setConfig("client-address", ADDRESS);
 ```
-for the address and
+for the address,
 ```java
-RemoteNotifications.config.setConfig("client-port", PORT);
+RemoteNotifications.config.setConfig("client-udp-port", PORT);
 ```
-for the port.
+for the client udp port and
+```java
+RemoteNotifications.config.setConfig("client-tcp-port", PORT);
+```
+for the client tcp port.
 This will be written to the config file.
