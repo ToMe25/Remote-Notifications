@@ -69,8 +69,6 @@ public class RemoteNotifications {
 			initClient();
 			if (arguments.containsKey("udpport")) {
 				config.setConfig("udp-port", Integer.parseInt(arguments.get("udpport")));
-				receiver.stop();
-				receiver = new Receiver(config.udpPort, config.tcpPort);
 			}
 			if (arguments.containsKey("tcpport")) {
 				config.setConfig("tcp-port", Integer.parseInt(arguments.get("tcpport")));

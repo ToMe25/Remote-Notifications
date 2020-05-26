@@ -2,6 +2,7 @@ package com.tome25.remotenotifications;
 
 import java.io.File;
 
+import com.tome25.remotenotifications.network.Receiver;
 import com.tome25.remotenotifications.notification.NotificationHandler;
 import com.tome25.utils.config.Config;
 
@@ -14,6 +15,7 @@ import com.tome25.utils.config.Config;
 public class ConfigHandler {
 
 	private final Config config;
+	private final boolean server;
 	public String clientAddress;
 	public int udpPort;
 	public int tcpPort;
@@ -24,9 +26,10 @@ public class ConfigHandler {
 	 * @param server whether this ConfigHandler is serverside.
 	 */
 	public ConfigHandler(boolean server) {
+		this.server = server;
 		File configDir = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 		configDir = new File(configDir.getParent(), "Remote-Notifications-Config");
-		config = new Config(configDir, false);
+		config = new Config(false, configDir, true, file -> updateConfig());
 		if (server) {
 			initServerConfig();
 		} else {
@@ -86,11 +89,41 @@ public class ConfigHandler {
 	public <T> void setConfig(String option, T value) {
 		config.setConfig(option, value);
 		if (option.equals("client-address") && RemoteNotifications.sender != null) {
+			clientAddress = (String) value;
 			RemoteNotifications.sender.setAddress((String) value);
 		} else if (option.equals("client-udp-port") && RemoteNotifications.sender != null) {
+			udpPort = (Integer) value;
 			RemoteNotifications.sender.setUdpPort((Integer) value);
 		} else if (option.equals("client-tcp-port") && RemoteNotifications.sender != null) {
+			tcpPort = (Integer) value;
 			RemoteNotifications.sender.setTcpPort((Integer) value);
+		} else if (option.equals("udp-port")) {
+			udpPort = (Integer) value;
+			RemoteNotifications.receiver.stop();
+			RemoteNotifications.receiver = new Receiver(udpPort, tcpPort);
+		} else if (option.equals("tcp-port")) {
+			tcpPort = (Integer) value;
+			RemoteNotifications.receiver.stop();
+			RemoteNotifications.receiver = new Receiver(udpPort, tcpPort);
+		}
+	}
+
+	/**
+	 * Updates the
+	 */
+	private void updateConfig() {
+		if (server) {
+			clientAddress = (String) config.getConfig("client-address");
+			RemoteNotifications.sender.setAddress(clientAddress);
+			udpPort = (int) config.getConfig("client-udp-port");
+			RemoteNotifications.sender.setUdpPort(udpPort);
+			tcpPort = (int) config.getConfig("client-tcp-port");
+			RemoteNotifications.sender.setTcpPort(tcpPort);
+		} else {
+			NotificationHandler.setNotification((String) config.getConfig("notification-style"));
+			NotificationHandler.setNotificationTime((int) config.getConfig("notification-time"));
+			udpPort = (int) config.getConfig("udp-port");
+			tcpPort = (int) config.getConfig("tcp-port");
 		}
 	}
 
