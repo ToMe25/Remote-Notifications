@@ -87,9 +87,10 @@ public class ConfigHandler {
 		config.setConfig(option, value);
 		if (option.equals("client-address") && RemoteNotifications.sender != null) {
 			RemoteNotifications.sender.setAddress((String) value);
-		}
-		if (option.equals("client-port") && RemoteNotifications.sender != null) {
-			RemoteNotifications.sender.setPort((Integer) value);
+		} else if (option.equals("client-udp-port") && RemoteNotifications.sender != null) {
+			RemoteNotifications.sender.setUdpPort((Integer) value);
+		} else if (option.equals("client-tcp-port") && RemoteNotifications.sender != null) {
+			RemoteNotifications.sender.setTcpPort((Integer) value);
 		}
 	}
 

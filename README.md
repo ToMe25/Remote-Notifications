@@ -12,7 +12,17 @@ Remote-Notifications can be used in the command line by starting a client with
 and sending a notifications with
 
 `java -jar Remote-Notifications.jar -server -header=HEADER -message=MESSAGE -address=ADDRESS`
+.
 
+You can also add
+
+`-udpport=PORT`
+
+or
+
+`tcpport=PORT`
+
+to the client command to set the ports he is listening on, or to the server, to set what ports he is sending the data to.
 
 ### Library
 If you want to send notifications from inside another application you will also need [ToMe25s-Java-Utilities](https://github.com/ToMe25/ToMe25s-Java-Utilities) as Remote-Notifications is based on that library.

@@ -72,7 +72,7 @@ public class Sender {
 				tcpSocket.close();
 				return;
 			} catch (Exception e) {
-				if(!(e instanceof ConnectException)) {
+				if (!(e instanceof ConnectException)) {
 					e.printStackTrace();
 				}
 			}
@@ -97,13 +97,22 @@ public class Sender {
 	}
 
 	/**
-	 * Sets the port of the client to send future notifications to.
+	 * Sets the udp port of the client to send future notifications to.
 	 * 
 	 * @param port the port of the client to send future notifications to.
 	 */
-	public void setPort(int port) {
+	public void setUdpPort(int port) {
 		this.udpPort = port;
 		packet = null;
+	}
+
+	/**
+	 * Sets the tcp port of the client to send future notifications to.
+	 * 
+	 * @param port the port of the client to send future notifications to.
+	 */
+	public void setTcpPort(int port) {
+		this.tcpPort = port;
 	}
 
 }

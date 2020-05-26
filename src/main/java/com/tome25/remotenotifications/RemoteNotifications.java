@@ -46,6 +46,12 @@ public class RemoteNotifications {
 			if (arguments.containsKey("address")) {
 				config.setConfig("client-address", arguments.get("address"));
 			}
+			if (arguments.containsKey("udpport")) {
+				config.setConfig("client-udp-port", Integer.parseInt(arguments.get("udpport")));
+			}
+			if (arguments.containsKey("tcpport")) {
+				config.setConfig("client-tcp-port", Integer.parseInt(arguments.get("tcpport")));
+			}
 			if (arguments.containsKey("header") && arguments.containsKey("message")) {
 				try {
 					sender.send(arguments.get("header"), arguments.get("message"));
@@ -57,6 +63,14 @@ public class RemoteNotifications {
 			}
 		} else {
 			initClient();
+			if (arguments.containsKey("udpport")) {
+				config.setConfig("udp-port", Integer.parseInt(arguments.get("udpport")));
+				receiver.stop();
+				receiver = new Receiver(config.udpPort, config.tcpPort);
+			}
+			if (arguments.containsKey("tcpport")) {
+				config.setConfig("tcp-port", Integer.parseInt(arguments.get("tcpport")));
+			}
 		}
 	}
 
@@ -115,7 +129,11 @@ public class RemoteNotifications {
 				"Runs this program in server mode, meaning it will send notifications.%nThis will not work without -header and -message."));
 		optionsHelp.put("header=HEADER", "The header to send to the client. Only works in server mode.");
 		optionsHelp.put("message=MESSAGE", "The message for the notification to send. Only works in server mode.");
-		optionsHelp.put("address=ADDRESS", "The address to send the notification to. Only works in server mode.");
+		optionsHelp.put("address=ADDRESS", String.format("The address to send the notification to. Only works in server mode.%nDefault is \"localhost\"."));
+		optionsHelp.put("udpport=PORT", String.format(
+				"The port to use for udp.%nOn the server this is the target port, on the client its the port to listen on.%nSet to 0 to disable udp. Default is 3112."));
+		optionsHelp.put("tcpport=PORT", String.format(
+				"The port to use for tcp.%nOn the server this is the target port, on the client its the port to listen on.%nSet to 0 to disable tcp. Default is 3113."));
 		Map<String, String> optionsHelp1 = new LinkedHashMap<String, String>();
 		final int[] length = new int[] { 0 };
 		optionsHelp.keySet().forEach(key -> {

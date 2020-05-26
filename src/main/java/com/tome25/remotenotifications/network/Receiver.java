@@ -20,6 +20,10 @@ import com.tome25.utils.json.JsonParser;
  */
 public class Receiver {
 
+	private UDPHandler udpHandler;
+	private TCPHandler tcpHandler;
+	private boolean stop;
+
 	/**
 	 * Creates a new Receiver listening to the given ports.
 	 * 
@@ -29,18 +33,39 @@ public class Receiver {
 	public Receiver(int udpPort, int tcpPort) {
 		if (udpPort > 0) {
 			try {
-				new UDPHandler(udpPort);
+				udpHandler = new UDPHandler(udpPort);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		if (tcpPort > 0) {
 			try {
-				new TCPHandler(tcpPort);
+				tcpHandler = new TCPHandler(tcpPort);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void stop() {
+		stop = true;
+		if (udpHandler != null && udpHandler.thread != null) {
+			udpHandler.socket.close();
+			try {
+				udpHandler.thread.join();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		if (tcpHandler != null && tcpHandler.thread != null) {
+			try {
+				tcpHandler.socket.close();
+				tcpHandler.thread.join();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		stop = false;
 	}
 
 	private class UDPHandler implements Runnable {
@@ -72,6 +97,9 @@ public class Receiver {
 							notification.getString("message"));
 				} catch (Exception e) {
 					e.printStackTrace();
+					if (stop) {
+						return;
+					}
 				}
 			}
 		}
@@ -119,6 +147,9 @@ public class Receiver {
 					soc.close();
 				} catch (Exception e) {
 					e.printStackTrace();
+					if (stop) {
+						return;
+					}
 				}
 			}
 		}
