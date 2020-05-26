@@ -72,6 +72,12 @@ public class ConfigHandler {
 	 */
 	public <T> void setConfig(String option, T value) {
 		config.setConfig(option, value);
+		if (option.equals("client-address") && RemoteNotifications.sender != null) {
+			RemoteNotifications.sender.setAddress((String) value);
+		}
+		if (option.equals("client-port") && RemoteNotifications.sender != null) {
+			RemoteNotifications.sender.setPort((int) value);
+		}
 	}
 
 }

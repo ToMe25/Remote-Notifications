@@ -45,7 +45,6 @@ public class RemoteNotifications {
 			initServer();
 			if (arguments.containsKey("address")) {
 				config.setConfig("client-address", arguments.get("address"));
-				sender.setAddress(arguments.get("address"));
 			}
 			if (arguments.containsKey("header") && arguments.containsKey("message")) {
 				try {
