@@ -38,7 +38,7 @@ public class TrayIconManager {
 						"RemoteNotifications.png");
 			}
 			BufferedImage img = ImageIO.read(image);
-			trayIcon = new TrayIcon(img, "test", createPopup());
+			trayIcon = new TrayIcon(img, "Remote-Notifications", createPopup());
 			trayIcon.setImageAutoSize(true);
 			tray = SystemTray.getSystemTray();
 			tray.add(trayIcon);

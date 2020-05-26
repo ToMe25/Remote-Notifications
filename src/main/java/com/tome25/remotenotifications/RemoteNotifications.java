@@ -41,6 +41,7 @@ public class RemoteNotifications {
 		}
 		Map<String, String> arguments = ArgumentParser.parse(args);
 		if (arguments.containsKey("help") && arguments.get("help").equalsIgnoreCase("true")) {
+			com.tome25.utils.logging.LogTracer.resetOut();// importing this would cause it to crash on loading.
 			printHelp();
 		} else if (arguments.containsKey("server") && arguments.get("server").equalsIgnoreCase("true")) {
 			initServer();
@@ -63,6 +64,7 @@ public class RemoteNotifications {
 				}
 			}
 		} else if (arguments.containsKey("version") && arguments.get("version").equalsIgnoreCase("true")) {
+			com.tome25.utils.logging.LogTracer.resetOut();// importing this would cause it to crash on loading.
 			System.out.println("Remote-Notifications version info");
 			printVersionInfo();
 		} else {
