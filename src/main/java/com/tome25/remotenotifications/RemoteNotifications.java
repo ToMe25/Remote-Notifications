@@ -64,6 +64,9 @@ public class RemoteNotifications {
 	 * Initializes the Server.
 	 */
 	public static void initServer() {
+		if (!DependencyChecker.checkDependencies()) {
+			return;
+		}
 		try {
 			config = new ConfigHandler(true);
 			sender = new Sender(config.clientAddress, config.udpPort, config.tcpPort);
@@ -76,6 +79,9 @@ public class RemoteNotifications {
 	 * Initializes the Client.
 	 */
 	public static void initClient() {
+		if (!DependencyChecker.checkDependencies()) {
+			return;
+		}
 		try {
 			icon = new TrayIconManager();
 			config = new ConfigHandler(false);
