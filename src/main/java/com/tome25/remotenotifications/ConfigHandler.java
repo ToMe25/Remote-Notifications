@@ -5,6 +5,12 @@ import java.io.File;
 import com.tome25.remotenotifications.notification.NotificationHandler;
 import com.tome25.utils.config.Config;
 
+/**
+ * This programs configuration handler.
+ * 
+ * @author ToMe25
+ *
+ */
 public class ConfigHandler {
 
 	private final Config config;

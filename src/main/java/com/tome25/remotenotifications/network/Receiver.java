@@ -8,6 +8,12 @@ import com.tome25.remotenotifications.notification.NotificationHandler;
 import com.tome25.utils.json.JsonElement;
 import com.tome25.utils.json.JsonParser;
 
+/**
+ * The class receiving the Notifications to display.
+ * 
+ * @author ToMe25
+ *
+ */
 public class Receiver implements Runnable {
 
 	private final Thread thread;

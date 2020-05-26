@@ -10,10 +10,18 @@ import java.net.UnknownHostException;
 import com.tome25.utils.json.JsonElement;
 import com.tome25.utils.json.JsonObject;
 
+/**
+ * The class sending the notifications to the client.
+ * 
+ * @author ToMe25
+ *
+ */
 public class Sender {
 
+	private String address;
+	private int port;
 	private final DatagramSocket socket;
-	private final DatagramPacket packet;
+	private DatagramPacket packet;
 
 	/**
 	 * creates a new Sender sending to the specified port of the specified device.
@@ -27,7 +35,8 @@ public class Sender {
 	 */
 	public Sender(int port, String receiver) throws SocketException, UnknownHostException {
 		socket = new DatagramSocket();
-		packet = new DatagramPacket(new byte[1024], 1024, InetAddress.getByName(receiver), port);
+		this.address = receiver;
+		this.port = port;
 	}
 
 	/**
@@ -51,8 +60,31 @@ public class Sender {
 	 * @throws IOException if sending the packet fails.
 	 */
 	public void send(JsonElement message) throws IOException {
+		if (packet == null) {
+			packet = new DatagramPacket(new byte[1024], 1024, InetAddress.getByName(address), port);
+		}
 		packet.setData(message.toByteArray());
 		socket.send(packet);
+	}
+
+	/**
+	 * Sets the address to send future notifications to.
+	 * 
+	 * @param address the address to send future notifications to.
+	 */
+	public void setAddress(String address) {
+		this.address = address;
+		this.packet = null;
+	}
+
+	/**
+	 * Sets the port of the client to send future notifications to.
+	 * 
+	 * @param port the port of the client to send future notifications to.
+	 */
+	public void setPort(int port) {
+		this.port = port;
+		this.packet = null;
 	}
 
 }

@@ -5,11 +5,17 @@ A simple Program/Library to create popup notifications on one device from anothe
 
 ## Usage
 Remote-Notifications can either be used in the command line by starting a client with
-`java -jar Remote-Notifications-VERSION.jar`
+
+`java -jar Remote-Notifications.jar`
+
 and sending a notifications with
-`java -jar Remote-Notifications-VERSION.jar -server -header=HEADER -message=MESSAGE`
+
+`java -jar Remote-Notifications.jar -server -header=HEADER -message=MESSAGE -address=ADDRESS`
+
 or by using it as a library in another project.
+
 If you want to send notifications from inside another application you will need [ToMe25s-Java-Utilities](https://github.com/ToMe25/ToMe25s-Java-Utilities) as Remote-Notifications is based on that library.
+
 After you have sorted out all the dependency stuff, you just need to invoke
 ```java
 RemoteNotifications.initServer();

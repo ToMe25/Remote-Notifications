@@ -54,6 +54,13 @@ public enum DialogNotification implements INotification {
 		private static int nr = 0;
 		private final Thread thread;
 
+		/**
+		 * Creates a new Runner handling a new notification.
+		 * 
+		 * @param header           the header of the notification.
+		 * @param message          the message of the notification.
+		 * @param notificationType the type of the notification.
+		 */
 		private Runner(String header, String message, DialogNotification notificationType) {
 			thread = new Thread(NOTIFICATION_RUNNERS, this, "Notification-Runner-" + nr);
 			this.header = header;

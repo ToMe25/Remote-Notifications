@@ -1,9 +1,7 @@
 package com.tome25.remotenotifications;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.tome25.remotenotifications.network.Receiver;
@@ -24,6 +22,11 @@ public class RemoteNotifications {
 	public static TrayIconManager icon;
 	public static ConfigHandler config;
 
+	/**
+	 * This programs main method.
+	 * 
+	 * @param args the start arguments.
+	 */
 	public static void main(String[] args) {
 		try {
 			LibraryLoader loader = new LibraryLoader(args);
@@ -35,33 +38,15 @@ public class RemoteNotifications {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if(args.length > 0 && args[0].isEmpty()) {
-			List<String> argsList = new ArrayList<String>();
-			for(String arg:args) {
-				if(!arg.replaceAll(" ", "").isEmpty()) {
-					argsList.add(arg);
-				}
-			}
-			args = argsList.toArray(new String[0]);
-		}
-		if (args.length == 1 && args[0].contains(" ")) {
-			args = splitArgs(args[0]);
-		}
-		Map<String, String> arguments = new HashMap<String, String>();
-		for (String arg : args) {
-			while (arg.startsWith("-")) {
-				arg = arg.substring(1);
-			}
-			if (!arg.isEmpty()) {
-				if (arg.contains("=")) {
-					arguments.put(arg.substring(0, arg.indexOf('=')), arg.substring(arg.indexOf('=') + 1));
-				} else {
-					arguments.put(arg, "true");
-				}
-			}
-		}
-		if (arguments.containsKey("server") && arguments.get("server").equalsIgnoreCase("true")) {
+		Map<String, String> arguments = ArgumentParser.parse(args);
+		if (arguments.containsKey("help") && arguments.get("help").equalsIgnoreCase("true")) {
+			printHelp();
+		} else if (arguments.containsKey("server") && arguments.get("server").equalsIgnoreCase("true")) {
 			initServer();
+			if (arguments.containsKey("address")) {
+				config.setConfig("client-address", arguments.get("address"));
+				sender.setAddress(arguments.get("address"));
+			}
 			if (arguments.containsKey("header") && arguments.containsKey("message")) {
 				try {
 					sender.send(arguments.get("header"), arguments.get("message"));
@@ -102,32 +87,41 @@ public class RemoteNotifications {
 	}
 
 	/**
-	 * Converts a String of arguments into a String array of arguments.
-	 * 
-	 * @param args the arguments String.
-	 * @return the arguments String array.
+	 * Prints help into the system output.
 	 */
-	private static String[] splitArgs(String args) {
-		List<String> argsList = new ArrayList<String>();
-		boolean string = false;
-		boolean backslash = false;
-		String arg = "";
-		for (char c : args.toCharArray()) {
-			if (c == '"' && !backslash) {
-				string = !string;
-				backslash = false;
-			} else if (c == '\\' && !backslash) {
-				backslash = true;
-			} else if (c == ' ' && !string && !backslash) {
-				argsList.add(arg);
-				arg = "";
-				backslash = false;
-			} else {
-				backslash = false;
-				arg += c;
+	public static void printHelp() {
+		System.out.println("Remote-Notifications help");
+		System.out.println("=========================");
+		File codeSource = new File(
+				RemoteNotifications.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+		System.out.format("java -jar %s [OPTIONS]%n", codeSource.getName());
+		System.out.println("-------------------------");
+		printOptionsHelp();
+	}
+
+	/**
+	 * Prints the options part of the help output.
+	 */
+	private static void printOptionsHelp() {
+		System.out.println("Options:");
+		Map<String, String> optionsHelp = new LinkedHashMap<String, String>();
+		optionsHelp.put("help", "Prints this help and stops.");
+		optionsHelp.put("server", String.format(
+				"Runs this program in server mode, meaning it will send notifications.%nThis will not work without -header and -message."));
+		optionsHelp.put("header=HEADER", "The header to send to the client. Only works in server mode.");
+		optionsHelp.put("message=MESSAGE", "The message for the notification to send. Only works in server mode.");
+		optionsHelp.put("address=ADDRESS", "The address to send the notification to. Only works in server mode.");
+		final int[] length = new int[] { 0 };
+		for (String key : optionsHelp.keySet()) {
+			if (key.length() > length[0]) {
+				length[0] = key.length();
 			}
 		}
-		argsList.add(arg);
-		return argsList.toArray(new String[0]);
+		length[0] += 2;
+		optionsHelp.forEach((key, value) -> {
+			key = String.format("%1$-" + length[0] + "s", key);
+			value = value.replaceAll("\n", String.format("\n%1$" + (length[0] + 4) + "s", ""));
+			System.out.format("  -%s %s%n", key, value);
+		});
 	}
 }
