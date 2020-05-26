@@ -2,6 +2,7 @@ package com.tome25.remotenotifications;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,8 +16,20 @@ import java.util.Map;
  */
 public class ArgumentParser {
 
-	private static List<String> args = Arrays
-			.asList(new String[] { "help", "info", "server", "header", "message", "client", "address" });
+	private static List<String> args = Arrays.asList(new String[] { "help", "server", "header", "message", "address" });
+	public static final Map<String, List<String>> ARG_TO_ALIASSES;
+	public static final Map<String, String> ALIAS_TO_ARG;
+
+	static {
+		ARG_TO_ALIASSES = new HashMap<String, List<String>>();
+		ARG_TO_ALIASSES.put("help", Arrays.asList(new String[] { "info", "i" }));
+		ARG_TO_ALIASSES.put("header", Arrays.asList(new String[] { "h" }));
+		ARG_TO_ALIASSES.put("server", Arrays.asList(new String[] { "s" }));
+		ARG_TO_ALIASSES.put("message", Arrays.asList(new String[] { "m" }));
+		ARG_TO_ALIASSES.put("address", Arrays.asList(new String[] { "client", "a" }));
+		ALIAS_TO_ARG = new HashMap<String, String>();
+		initAliasToArg();
+	}
 
 	/**
 	 * Parses the arguments String array to a easier to use Map.
@@ -31,10 +44,10 @@ public class ArgumentParser {
 				while (arg.startsWith("-") || arg.startsWith(" ")) {
 					arg = arg.substring(1);
 				}
-				if (ArgumentParser.args.contains(arg.replaceAll(" ", "").toLowerCase())) {
+				if (isValidArg(arg.replaceAll(" ", "").toLowerCase())) {
 					arguments.put(arg.replaceAll(" ", "").toLowerCase(), "true");
 				} else if (arg.contains("=")
-						&& ArgumentParser.args.contains(arg.trim().substring(0, arg.indexOf('=')).toLowerCase())) {
+						&& isValidArg(arg.trim().substring(0, arg.indexOf('=')).toLowerCase())) {
 					if (arg.contains(" ")) {
 						arguments.putAll(parse(splitArgs(arg)));
 					} else {
@@ -51,14 +64,12 @@ public class ArgumentParser {
 				}
 			}
 		}
-		if (arguments.containsKey("info")) {
-			arguments.put("help", arguments.get("info"));
-			arguments.remove("info");
-		}
-		if (arguments.containsKey("client")) {
-			arguments.put("address", arguments.get("client"));
-			arguments.remove("client");
-		}
+		ALIAS_TO_ARG.forEach((alias, key) -> {
+			if (arguments.containsKey(alias)) {
+				arguments.put(key, arguments.get(alias));
+				arguments.remove(alias);
+			}
+		});
 		return arguments;
 	}
 
@@ -90,6 +101,26 @@ public class ArgumentParser {
 		}
 		argsList.add(arg);
 		return argsList.toArray(new String[0]);
+	}
+
+	/**
+	 * Initializes the ALIAS_TO_ARG map.
+	 */
+	private static void initAliasToArg() {
+		ALIAS_TO_ARG.clear();
+		ARG_TO_ALIASSES.forEach((arg, aliasses) -> {
+			aliasses.forEach(alias -> ALIAS_TO_ARG.put(alias, arg));
+		});
+	}
+
+	/**
+	 * Checks whether the give argument is a valid argument.
+	 * 
+	 * @param arg the argument to check.
+	 * @return whether the give argument is a valid argument.
+	 */
+	private static boolean isValidArg(String arg) {
+		return args.contains(arg) || ALIAS_TO_ARG.containsKey(arg);
 	}
 
 }

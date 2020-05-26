@@ -32,6 +32,7 @@ To use the server you need to then invoke
 RemoteNotifications.sender.send(HEADER, MESSAGE);
 ```
 to send a notification to the client set in the config file.
+
 If you for some reason want to change the client from code, you can do that with
 ```java
 RemoteNotifications.config.setConfig("client-address", ADDRESS);
@@ -45,4 +46,5 @@ for the client udp port and
 RemoteNotifications.config.setConfig("client-tcp-port", PORT);
 ```
 for the client tcp port.
+
 This will be written to the config file.

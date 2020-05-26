@@ -116,17 +116,29 @@ public class RemoteNotifications {
 		optionsHelp.put("header=HEADER", "The header to send to the client. Only works in server mode.");
 		optionsHelp.put("message=MESSAGE", "The message for the notification to send. Only works in server mode.");
 		optionsHelp.put("address=ADDRESS", "The address to send the notification to. Only works in server mode.");
+		Map<String, String> optionsHelp1 = new LinkedHashMap<String, String>();
 		final int[] length = new int[] { 0 };
-		for (String key : optionsHelp.keySet()) {
-			if (key.length() > length[0]) {
-				length[0] = key.length();
+		optionsHelp.keySet().forEach(key -> {
+			String newKey = "-" + key;
+			String k = key;
+			if (newKey.contains("=")) {
+				k = k.substring(0, k.indexOf('='));
 			}
-		}
+			if (ArgumentParser.ARG_TO_ALIASSES.containsKey(k)) {
+				String[] k1 = new String[] { newKey };
+				ArgumentParser.ARG_TO_ALIASSES.get(k).forEach(alias -> k1[0] = String.format("-%s %s", alias, k1[0]));
+				newKey = k1[0];
+			}
+			optionsHelp1.put(newKey, optionsHelp.get(key));
+			if (newKey.length() > length[0]) {
+				length[0] = newKey.length();
+			}
+		});
 		length[0] += 2;
-		optionsHelp.forEach((key, value) -> {
+		optionsHelp1.forEach((key, value) -> {
 			key = String.format("%1$-" + length[0] + "s", key);
-			value = value.replaceAll("\n", String.format("\n%1$" + (length[0] + 4) + "s", ""));
-			System.out.format("  -%s %s%n", key, value);
+			value = value.replaceAll("\n", String.format("\n%1$" + (length[0] + 3) + "s", ""));
+			System.out.format("  %s %s%n", key, value);
 		});
 	}
 }
