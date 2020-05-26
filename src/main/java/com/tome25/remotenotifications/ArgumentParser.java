@@ -50,12 +50,15 @@ public class ArgumentParser {
 				}
 				if (isValidArg(arg.replaceAll(" ", "").toLowerCase())) {
 					arguments.put(arg.replaceAll(" ", "").toLowerCase(), "true");
+				} else if (arg.contains(" ") && isValidArg(arg.trim().substring(0, arg.indexOf(' ')).toLowerCase())) {
+					arguments.put(arg.trim().substring(0, arg.indexOf(' ')).toLowerCase(),
+							arg.substring(arg.indexOf(' ') + 1));
+					arguments.putAll(parse(splitArgs(arg.substring(arg.indexOf(' ') + 1))));
 				} else if (arg.contains("=") && isValidArg(arg.trim().substring(0, arg.indexOf('=')).toLowerCase())) {
+					arguments.put(arg.trim().substring(0, arg.indexOf('=')).toLowerCase(),
+							arg.substring(arg.indexOf('=') + 1));
 					if (arg.contains(" ")) {
-						arguments.putAll(parse(splitArgs(arg)));
-					} else {
-						arguments.put(arg.trim().substring(0, arg.indexOf('=')).toLowerCase(),
-								arg.substring(arg.indexOf("=") + 1));
+						arguments.putAll(parse(splitArgs(arg.substring(arg.indexOf('=') + 1))));
 					}
 				} else if (!arguments.isEmpty()) {
 					String lastKey = "";
@@ -67,7 +70,9 @@ public class ArgumentParser {
 				}
 			}
 		}
-		ALIAS_TO_ARG.forEach((alias, key) -> {
+		ALIAS_TO_ARG.forEach((alias, key) ->
+
+		{
 			if (arguments.containsKey(alias)) {
 				arguments.put(key, arguments.get(alias));
 				arguments.remove(alias);
