@@ -52,7 +52,7 @@ public class ArgumentParser {
 					arguments.put(arg.replaceAll(" ", "").toLowerCase(), "true");
 				} else if (arg.contains(" ") && isValidArg(arg.trim().substring(0, arg.indexOf(' ')).toLowerCase())) {
 					arguments.put(arg.trim().substring(0, arg.indexOf(' ')).toLowerCase(),
-							arg.substring(arg.indexOf(' ') + 1));
+							"true");
 					arguments.putAll(parse(splitArgs(arg.substring(arg.indexOf(' ') + 1))));
 				} else if (arg.contains("=") && isValidArg(arg.trim().substring(0, arg.indexOf('=')).toLowerCase())) {
 					arguments.put(arg.trim().substring(0, arg.indexOf('=')).toLowerCase(),
