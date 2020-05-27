@@ -30,9 +30,9 @@ public class RemoteNotifications {
 	 */
 	public static void main(String[] args) {
 		try {
-			LibraryLoader loader = new LibraryLoader(args);
 			LibraryDownloader.downloadThis();
-			loader.addThisToClasspath();
+			LibraryLoader.setArgs(args);
+			LibraryLoader.addLibsToClasspath();
 			com.tome25.utils.logging.LogTracer.traceOutputs(new File("Remote-Notifications.log"));// importing this
 																									// would cause it to
 																									// crash on loading.

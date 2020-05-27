@@ -13,7 +13,7 @@ public class DependencyChecker {
 	/**
 	 * The minimal required version of ToMe25s-Java-Utilities.
 	 */
-	private static final int[] ToMe25s_Java_Utilities_VERSION = new int[] { 1, 0, 123 };
+	private static final int[] ToMe25s_Java_Utilities_VERSION = new int[] { 1, 0, 126 };
 
 	/**
 	 * Checks whether all libraries are at least the minimal required version.
