@@ -151,11 +151,13 @@ public enum DialogNotification implements INotification {
 			frame.add(messageLabel, constraints);
 			frame.setAlwaysOnTop(true);
 			frame.setVisible(true);
-			try {
-				Thread.sleep(NotificationHandler.getNotificationTime() * 1000);
-				frame.dispose();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			if (NotificationHandler.getNotificationTime() > 0) {
+				try {
+					Thread.sleep(NotificationHandler.getNotificationTime() * 1000);
+					frame.dispose();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

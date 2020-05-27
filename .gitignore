@@ -35,3 +35,6 @@ hs_err_pid*
 
 # Config file
 *.cfg
+
+# Custom
+ToMe25s-Java-Utilities-Download-Url.txt

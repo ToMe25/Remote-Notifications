@@ -46,11 +46,14 @@ public class ConfigHandler {
 				"Valid Options are: TrayIcon_none, TrayIcon_info, TrayIcon_warning, TrayIcon_error,",
 				"Dialog_light_frameless, Dialog_dark_frameless, Dialog_light_framed, Dialog_dark_framed.");
 		config.addConfig("client.cfg", "notification-time", 10,
-				"Some notification styles have a limited lifetime after which they dissappear, this setting controls that time. In seconds.");
+				"Some notification styles have a limited lifetime after which they dissappear, this setting controls that time.",
+				"In seconds. Set to 0 to stop it from disappearing by itself.");
 		config.addConfig("client.cfg", "udp-port", 3112,
-				"The port to listen on for notifications that are sent over udp.", "Set to 0 to disable udp handling.");
+				"The port to listen on for notifications that are sent over udp.",
+				"Set to 0 to disable udp handling. Requires restart.");
 		config.addConfig("client.cfg", "tcp-port", 3113,
-				"The port to listen on for notifications that are sent over tcp.", "Set to 0 to disable tcp handling.");
+				"The port to listen on for notifications that are sent over tcp.",
+				"Set to 0 to disable tcp handling. Requires restart.");
 		config.readConfig();
 		NotificationHandler.setNotification((String) config.getConfig("notification-style"));
 		NotificationHandler.setNotificationTime((int) config.getConfig("notification-time"));
