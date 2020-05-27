@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.jar.JarFile;
 
+import com.tome25.utils.version.VersionControl;
+
 /**
  * A utility class to check for this softwares version.
  * 
@@ -12,8 +14,12 @@ import java.util.jar.JarFile;
  */
 public class VersionChecker {
 
-	private static File file;
-	private static JarFile archieve;
+	private static String versionString;
+	private static int[] versionArray;
+
+	static {
+		VersionControl.setVersionString("Remote-Notifications", getVersionString());
+	}
 
 	/**
 	 * gets the major part of this softwares version number.
@@ -25,7 +31,7 @@ public class VersionChecker {
 		if (version.length > 0) {
 			return version[0];
 		} else {
-			return 1;
+			return 0;
 		}
 	}
 
@@ -44,7 +50,7 @@ public class VersionChecker {
 	}
 
 	/**
-	 * gets the build part of this softwares version number.
+	 * gets the build/patch part of this softwares version number.
 	 * 
 	 * @return the build number.
 	 */
@@ -58,6 +64,15 @@ public class VersionChecker {
 	}
 
 	/**
+	 * gets the build/patch part of this softwares version number.
+	 * 
+	 * @return the build number.
+	 */
+	public static int getPatch() {
+		return getBuild();
+	}
+
+	/**
 	 * gets this softwares version number split into its components, if this is
 	 * still in a Jar, if not this will return [1, 0]. the used format is [MAJOR,
 	 * MINOR, BUILD].
@@ -65,43 +80,51 @@ public class VersionChecker {
 	 * @return the version number.
 	 */
 	public static int[] getVersionArray() {
-		String[] split = getVersionString().split("\\.");
-		int[] version = new int[split.length];
-		int i = 0;
-		for (String part : split) {
-			version[i] = Integer.parseInt(part);
-			i++;
+		if (versionArray == null) {
+			String[] split = getVersionString().split("\\.");
+			int[] version = new int[split.length];
+			int i = 0;
+			for (String part : split) {
+				version[i] = Integer.parseInt(part);
+				i++;
+			}
+			versionArray = version;
+			VersionControl.setVersionArray("Remote-Notifications", versionArray);
 		}
-		return version;
+		return versionArray;
 	}
 
 	/**
-	 * gets this softwares version number as a string, if this is still in a Jar, if
+	 * Gets this softwares version number as a string, if this is still in a Jar, if
 	 * not this will return 1.0. the used format is "MAJOR.MINOR.BUILD".
 	 * 
 	 * @return the version number.
 	 */
 	public static String getVersionString() {
-		if (file == null) {
-			file = new File(VersionChecker.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-		}
-		if (file.isDirectory()) {
-			return "1.0";
-		}
-		if (archieve == null) {
-			try {
-				archieve = new JarFile(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-				return "1.0";
+		if (versionString == null) {
+			File file = new File(VersionChecker.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+			JarFile jar = null;
+			if (file.isDirectory()) {
+				versionString = "1.0";
+			} else {
+				try {
+					jar = new JarFile(file);
+				} catch (IOException e) {
+					e.printStackTrace();
+					versionString = "1.0";
+				}
 			}
+			if (!file.isDirectory()) {
+				try {
+					versionString = jar.getManifest().getMainAttributes().getValue("Implementation-Version");
+				} catch (Exception e) {
+					e.printStackTrace();
+					versionString = "1.0";
+				}
+			}
+			VersionControl.setVersionString("Remote-Notifications", versionString);
 		}
-		try {
-			return archieve.getManifest().getMainAttributes().getValue("Implementation-Version");
-		} catch (IOException e) {
-			e.printStackTrace();
-			return "1.0";
-		}
+		return versionString;
 	}
 
 }
