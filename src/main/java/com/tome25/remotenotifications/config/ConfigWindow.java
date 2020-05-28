@@ -84,7 +84,7 @@ public class ConfigWindow {
 		okButton.setToolTipText("Applies changes and closes this window.");
 		buttonsPanel.add(okButton);
 		JButton exitButton = new JButton("Exit");
-		exitButton.addActionListener(new PopupManager.OptionListener(e -> System.exit(0)));
+		exitButton.addActionListener(new PopupManager.OptionListener(e -> PopupManager.askExit()));
 		exitButton.setToolTipText("Closes the Remote-Notifications client.");
 		buttonsPanel.add(exitButton);
 		contentPane.add(buttonsPanel, BorderLayout.PAGE_END);
