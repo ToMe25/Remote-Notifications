@@ -1,4 +1,4 @@
-package com.tome25.remotenotifications;
+package com.tome25.remotenotifications.utility;
 
 import java.io.File;
 import java.io.IOException;

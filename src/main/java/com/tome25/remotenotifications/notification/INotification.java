@@ -1,5 +1,11 @@
 package com.tome25.remotenotifications.notification;
 
+/**
+ * The interface all Notifications should implement.
+ * 
+ * @author ToMe25
+ *
+ */
 public interface INotification {
 
 	/**

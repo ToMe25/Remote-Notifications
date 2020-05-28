@@ -4,8 +4,13 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.tome25.remotenotifications.config.ConfigHandler;
+import com.tome25.remotenotifications.config.ConfigWindow;
 import com.tome25.remotenotifications.network.Receiver;
 import com.tome25.remotenotifications.network.Sender;
+import com.tome25.remotenotifications.utility.ArgumentParser;
+import com.tome25.remotenotifications.utility.DependencyChecker;
+import com.tome25.remotenotifications.utility.VersionChecker;
 import com.tome25.utils.lib.LibraryDownloader;
 import com.tome25.utils.lib.LibraryLoader;
 import com.tome25.utils.version.VersionControl;
@@ -22,6 +27,7 @@ public class RemoteNotifications {
 	public static Sender sender;
 	public static TrayIconManager icon;
 	public static ConfigHandler config;
+	public static ConfigWindow cfgWindow;
 
 	/**
 	 * This programs main method.
@@ -103,6 +109,7 @@ public class RemoteNotifications {
 		try {
 			icon = new TrayIconManager();
 			config = new ConfigHandler(false);
+			cfgWindow = new ConfigWindow(config);
 			receiver = new Receiver(config.udpPort, config.tcpPort);
 		} catch (Exception e) {
 			e.printStackTrace();

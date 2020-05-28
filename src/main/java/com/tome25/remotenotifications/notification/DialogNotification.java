@@ -6,19 +6,27 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.PopupMenu;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
-import com.tome25.utils.lib.JarExtractor;
+import com.tome25.remotenotifications.utility.IconHandler;
+import com.tome25.remotenotifications.utility.PopupManager;
 
+/**
+ * Notifications based on {@link JDialog}s.
+ * 
+ * @author ToMe25
+ *
+ */
 public enum DialogNotification implements INotification {
 	LIGHT_FRAMELESS(false, false), DARK_FRAMELESS(true, false), LIGHT_FRAMED(false, true), DARK_FRAMED(true, true);
 
@@ -79,19 +87,7 @@ public enum DialogNotification implements INotification {
 				frame.getContentPane().setBackground(LIGHT_COLOR);
 			}
 			frame.setSize(300, 100);
-			ImageIcon icon = null;
-			try {
-				File image = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
-				image = new File(image.getParent(), "RemoteNotifications.png");
-				if (!image.exists()) {
-					JarExtractor.extractFileFromJar(
-							new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()),
-							"RemoteNotifications.png");
-				}
-				icon = new ImageIcon(ImageIO.read(image));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			ImageIcon icon = IconHandler.getLogoIcon();
 			if (notificationType.framed) {
 				frame.setIconImage(icon.getImage());
 			} else {
@@ -124,14 +120,7 @@ public enum DialogNotification implements INotification {
 				constraints.weightx = 0f;
 				constraints.weighty = 0f;
 				constraints.fill = GridBagConstraints.NONE;
-				JButton closeButton = new JButton(new AbstractAction("x") {
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void actionPerformed(final ActionEvent e) {
-						frame.dispose();
-					}
-				});
+				JButton closeButton = new JButton(new CloseAction("x", frame));
 				closeButton.setMargin(new Insets(1, 4, 1, 4));
 				closeButton.setFocusable(false);
 				frame.add(closeButton, constraints);
@@ -151,6 +140,9 @@ public enum DialogNotification implements INotification {
 			frame.add(messageLabel, constraints);
 			frame.setAlwaysOnTop(true);
 			frame.setVisible(true);
+			PopupMenu popup = PopupManager.createPopup();
+			frame.add(popup);
+			frame.addMouseListener(new PopupListener(popup));
 			if (NotificationHandler.getNotificationTime() > 0) {
 				try {
 					Thread.sleep(NotificationHandler.getNotificationTime() * 1000);
@@ -160,6 +152,63 @@ public enum DialogNotification implements INotification {
 				}
 			}
 		}
+	}
+
+	private static class PopupListener extends MouseAdapter {
+
+		private final PopupMenu popup;
+
+		/**
+		 * Creates a new PopupListener showing the given {@link PopupMenu} on
+		 * rightclick.
+		 * 
+		 * @param menu the menu to show.
+		 */
+		private PopupListener(PopupMenu menu) {
+			popup = menu;
+		}
+
+		@Override
+		public void mousePressed(MouseEvent ev) {
+			if (ev.isPopupTrigger()) {
+				popup.show(ev.getComponent(), ev.getX(), ev.getY());
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent ev) {
+			if (ev.isPopupTrigger()) {
+				popup.show(ev.getComponent(), ev.getX(), ev.getY());
+			}
+		}
+
+	}
+
+	private static class CloseAction extends AbstractAction {
+
+		/**
+		 * This classes serverialVersionUID.
+		 */
+		private static final long serialVersionUID = -5271381741363360738L;
+		private final JDialog frame;
+
+		/**
+		 * Creates a new CloseAction with the given text, closing the given
+		 * {@link JDialog}.
+		 * 
+		 * @param text  the text for the {@link JButton}.
+		 * @param frame the {@link JDialog} to close.
+		 */
+		private CloseAction(String text, JDialog frame) {
+			super(text);
+			this.frame = frame;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			frame.dispose();
+		}
+
 	}
 
 }

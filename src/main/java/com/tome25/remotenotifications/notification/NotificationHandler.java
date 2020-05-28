@@ -11,43 +11,10 @@ public class NotificationHandler {
 	 * @param notification the new notification type to use.
 	 */
 	public static void setNotification(String notification) {
-		switch (notification) {
-		case "TrayIcon_none":
-			NotificationHandler.notification = TrayIconNotification.NONE;
-			break;
-
-		case "TrayIcon_info":
-			NotificationHandler.notification = TrayIconNotification.INFO;
-			break;
-
-		case "TrayIcon_warning":
-			NotificationHandler.notification = TrayIconNotification.WARNING;
-			break;
-
-		case "TrayIcon_error":
-			NotificationHandler.notification = TrayIconNotification.ERROR;
-			break;
-
-		case "Dialog_light_frameless":
-			NotificationHandler.notification = DialogNotification.LIGHT_FRAMELESS;
-			break;
-			
-		case "Dialog_dark_frameless":
-			NotificationHandler.notification = DialogNotification.DARK_FRAMELESS;
-			break;
-			
-		case "Dialog_light_framed":
-			NotificationHandler.notification = DialogNotification.LIGHT_FRAMED;
-			break;
-			
-		case "Dialog_dark_framed":
-			NotificationHandler.notification = DialogNotification.DARK_FRAMED;
-			break;
-
-		default:
-			System.err.format("Couldn't find requested notification \"%s\".", notification);
-			NotificationHandler.notification = TrayIconNotification.NONE;
-			break;
+		try {
+			NotificationHandler.notification = Notifications.valueOf(notification.toUpperCase()).getNotification();
+		} catch (Exception e) {
+			NotificationHandler.notification = Notifications.DIALOG_DARK_FRAMELESS.getNotification();
 		}
 	}
 

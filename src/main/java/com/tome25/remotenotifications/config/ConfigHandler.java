@@ -1,7 +1,11 @@
-package com.tome25.remotenotifications;
+package com.tome25.remotenotifications.config;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
+import com.tome25.remotenotifications.RemoteNotifications;
 import com.tome25.remotenotifications.network.Receiver;
 import com.tome25.remotenotifications.notification.NotificationHandler;
 import com.tome25.utils.config.Config;
@@ -14,6 +18,7 @@ import com.tome25.utils.config.Config;
  */
 public class ConfigHandler {
 
+	private final List<Consumer<ConfigHandler>> updateHandlers = new ArrayList<Consumer<ConfigHandler>>();
 	private final Config config;
 	private final boolean server;
 	public String clientAddress;
@@ -41,7 +46,7 @@ public class ConfigHandler {
 	 * initializes the server config.
 	 */
 	private void initClientConfig() {
-		config.addConfig("client.cfg", "notification-style", "TrayIcon_none",
+		config.addConfig("client.cfg", "notification-style", "Dialog_dark_frameless",
 				"The style of notification you want to see when receiving some notification to display.",
 				"Valid Options are: TrayIcon_none, TrayIcon_info, TrayIcon_warning, TrayIcon_error,",
 				"Dialog_light_frameless, Dialog_dark_frameless, Dialog_light_framed, Dialog_dark_framed.");
@@ -49,11 +54,9 @@ public class ConfigHandler {
 				"Some notification styles have a limited lifetime after which they dissappear, this setting controls that time.",
 				"In seconds. Set to 0 to stop it from disappearing by itself.");
 		config.addConfig("client.cfg", "udp-port", 3112,
-				"The port to listen on for notifications that are sent over udp.",
-				"Set to 0 to disable udp handling. Requires restart.");
+				"The port to listen on for notifications that are sent over udp.", "Set to 0 to disable udp handling.");
 		config.addConfig("client.cfg", "tcp-port", 3113,
-				"The port to listen on for notifications that are sent over tcp.",
-				"Set to 0 to disable tcp handling. Requires restart.");
+				"The port to listen on for notifications that are sent over tcp.", "Set to 0 to disable tcp handling.");
 		config.readConfig();
 		NotificationHandler.setNotification((String) config.getConfig("notification-style"));
 		NotificationHandler.setNotificationTime((int) config.getConfig("notification-time"));
@@ -82,6 +85,16 @@ public class ConfigHandler {
 	}
 
 	/**
+	 * Gets the config value for the given Name.
+	 * 
+	 * @param name the name of the config option to get.
+	 * @return the config value for the given Name.
+	 */
+	public Object getConfig(String option) {
+		return config.getConfig(option);
+	}
+
+	/**
 	 * Sets the given config option to the given value. Will be synchronized to the
 	 * config file.
 	 * 
@@ -91,43 +104,55 @@ public class ConfigHandler {
 	 */
 	public <T> void setConfig(String option, T value) {
 		config.setConfig(option, value);
-		if (option.equals("client-address") && RemoteNotifications.sender != null) {
-			clientAddress = (String) value;
-			RemoteNotifications.sender.setAddress((String) value);
-		} else if (option.equals("client-udp-port") && RemoteNotifications.sender != null) {
-			udpPort = (Integer) value;
-			RemoteNotifications.sender.setUdpPort((Integer) value);
-		} else if (option.equals("client-tcp-port") && RemoteNotifications.sender != null) {
-			tcpPort = (Integer) value;
-			RemoteNotifications.sender.setTcpPort((Integer) value);
-		} else if (option.equals("udp-port")) {
-			udpPort = (Integer) value;
-			RemoteNotifications.receiver.stop();
-			RemoteNotifications.receiver = new Receiver(udpPort, tcpPort);
-		} else if (option.equals("tcp-port")) {
-			tcpPort = (Integer) value;
-			RemoteNotifications.receiver.stop();
-			RemoteNotifications.receiver = new Receiver(udpPort, tcpPort);
-		}
 	}
 
 	/**
-	 * Updates the
+	 * Updates the values from the config, that are stored elsewhere.
 	 */
 	private void updateConfig() {
 		if (server) {
 			clientAddress = (String) config.getConfig("client-address");
-			RemoteNotifications.sender.setAddress(clientAddress);
 			udpPort = (int) config.getConfig("client-udp-port");
-			RemoteNotifications.sender.setUdpPort(udpPort);
 			tcpPort = (int) config.getConfig("client-tcp-port");
-			RemoteNotifications.sender.setTcpPort(tcpPort);
+			if (RemoteNotifications.sender != null) {
+				RemoteNotifications.sender.setAddress(clientAddress);
+				RemoteNotifications.sender.setUdpPort(udpPort);
+				RemoteNotifications.sender.setTcpPort(tcpPort);
+			}
 		} else {
 			NotificationHandler.setNotification((String) config.getConfig("notification-style"));
 			NotificationHandler.setNotificationTime((int) config.getConfig("notification-time"));
+			int oldUdp = udpPort;
+			int oldTcp = tcpPort;
 			udpPort = (int) config.getConfig("udp-port");
 			tcpPort = (int) config.getConfig("tcp-port");
+			if (oldUdp != udpPort || oldTcp != tcpPort) {
+				if (RemoteNotifications.receiver != null) {
+					RemoteNotifications.receiver.stop();
+				}
+				RemoteNotifications.receiver = new Receiver(udpPort, tcpPort);
+			}
 		}
+		updateHandlers.forEach(handler -> handler.accept(this));
+	}
+
+	/**
+	 * Checks whether this config is serverside, or clientside.
+	 * 
+	 * @return whether this config is serverside, or clientside.
+	 */
+	protected boolean isServer() {
+		return server;
+	}
+
+	/**
+	 * Registeres a {@link Consumer} that will be called with this ConfigHandler every time
+	 * the config file updates.
+	 * 
+	 * @param updateHandler the update handler.
+	 */
+	public void registerUpdateHandler(Consumer<ConfigHandler> updateHandler) {
+		updateHandlers.add(updateHandler);
 	}
 
 }
