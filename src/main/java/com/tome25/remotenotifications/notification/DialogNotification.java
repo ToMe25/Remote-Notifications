@@ -13,7 +13,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -87,9 +86,8 @@ public enum DialogNotification implements INotification {
 				frame.getContentPane().setBackground(LIGHT_COLOR);
 			}
 			frame.setSize(300, 100);
-			ImageIcon icon = IconHandler.getLogoIcon();
 			if (notificationType.framed) {
-				frame.setIconImage(icon.getImage());
+				frame.setIconImage(IconHandler.getLogoImage());
 			} else {
 				frame.setUndecorated(true);
 			}
@@ -105,7 +103,11 @@ public enum DialogNotification implements INotification {
 			constraints.insets = new Insets(5, 5, 5, 5);
 			constraints.fill = GridBagConstraints.BOTH;
 			JLabel headingLabel = new JLabel(header);
-			headingLabel.setIcon(icon);
+			try {
+				headingLabel.setIcon(IconHandler.getIconScaled("Remote-Notifications.png", 32, 32));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			headingLabel.setOpaque(false);
 			if (notificationType.dark) {
 				headingLabel.setForeground(DARK_TEXT_COLOR);

@@ -1,5 +1,7 @@
 package com.tome25.remotenotifications.utility;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -64,6 +66,27 @@ public class IconHandler {
 	}
 
 	/**
+	 * Gets the image for the given name from the cache, or from the disk if it
+	 * isn't in the cache yet as a {@link BufferedImage}, and resizes it afterwards.
+	 * 
+	 * @param name   the name of the image to look for.
+	 * @param width  the width or the output image.
+	 * @param height the height of the output image.
+	 * @return the {@link BufferedImage}.
+	 * @throws IOException if reading the image fails.
+	 */
+	public static BufferedImage getImageScaled(String name, int width, int height) throws IOException {
+		BufferedImage image = getImage(name);
+		BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D graphics2D = resized.createGraphics();
+		graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+		graphics2D.drawImage(image, 0, 0, width, height, null);
+		graphics2D.dispose();
+		return resized;
+	}
+
+	/**
 	 * Gets this softwares logo as a {@link ImageIcon}.
 	 * 
 	 * @return this softwares logo as a {@link ImageIcon}.
@@ -101,6 +124,36 @@ public class IconHandler {
 	 */
 	public static ImageIcon getIcon(String name, String description) throws IOException {
 		return new ImageIcon(getImage(name), description);
+	}
+
+	/**
+	 * Gets the image for the given name from the cache, or from the disk if it
+	 * isn't in the cache yet as a {@link ImageIcon}, and resizes it.
+	 * 
+	 * @param name   the name of the image to look for. will also be used as the
+	 *               {@link ImageIcon}s description.
+	 * @param width  the width or the output image.
+	 * @param height the height of the output image.
+	 * @return the {@link ImageIcon}.
+	 * @throws IOException if reading the image fails.
+	 */
+	public static ImageIcon getIconScaled(String name, int width, int height) throws IOException {
+		return getIconScaled(name, name, width, height);
+	}
+
+	/**
+	 * Gets the image for the given name from the cache, or from the disk if it
+	 * isn't in the cache yet as a {@link ImageIcon}, and resizes it.
+	 * 
+	 * @param name        the name of the image to look for.
+	 * @param description the description for the {@link ImageIcon}.
+	 * @param width       the width or the output image.
+	 * @param height      the height of the output image.
+	 * @return the {@link ImageIcon}.
+	 * @throws IOException if reading the image fails.
+	 */
+	public static ImageIcon getIconScaled(String name, String description, int width, int height) throws IOException {
+		return new ImageIcon(getImageScaled(name, width, height), description);
 	}
 
 }
