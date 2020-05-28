@@ -1,11 +1,16 @@
 package com.tome25.remotenotifications;
 
-import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.function.Consumer;
 
 import com.tome25.remotenotifications.utility.IconHandler;
 import com.tome25.remotenotifications.utility.PopupManager;
+
+import dorkbox.systemTray.MenuItem;
+import dorkbox.systemTray.SystemTray;
 
 public class TrayIconManager {
 
@@ -16,18 +21,20 @@ public class TrayIconManager {
 	 * Creates a new TrayIconManager.
 	 */
 	public TrayIconManager() {
-		// Check the SystemTray is supported
-		if (!SystemTray.isSupported()) {
-			System.err.println("SystemTray is not supported");
-			return;
-		}
-		try {
-			trayIcon = new TrayIcon(IconHandler.getLogoImage(), "Remote-Notifications", PopupManager.createPopup());
-			trayIcon.setImageAutoSize(true);
-			tray = SystemTray.getSystemTray();
-			tray.add(trayIcon);
-		} catch (Exception e) {
-			e.printStackTrace();
+		SystemTray.DEBUG = true;
+		tray = SystemTray.get();
+		if (tray == null) {
+			System.err.println("SystemTray is not supported!");
+		} else {
+			tray.setTooltip("Remote-Notifications");
+			try {
+				tray.setImage(IconHandler.getImageScaled("RemoteNotifications.png", tray.getTrayImageSize(),
+						tray.getTrayImageSize()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			tray.getMenu().add(new MenuItem("Config", new OptionListener(e -> RemoteNotifications.cfgWindow.show())));
+			tray.getMenu().add(new MenuItem("Exit", new OptionListener(e -> PopupManager.askExit())));
 		}
 	}
 
@@ -42,6 +49,21 @@ public class TrayIconManager {
 		if (trayIcon != null) {
 			trayIcon.displayMessage(header, message, type);
 		}
+	}
+
+	private class OptionListener implements ActionListener {
+
+		private final Consumer<ActionEvent> action;
+
+		private OptionListener(Consumer<ActionEvent> action) {
+			this.action = action;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			action.accept(e);
+		}
+
 	}
 
 }

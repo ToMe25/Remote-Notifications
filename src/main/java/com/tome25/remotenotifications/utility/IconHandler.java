@@ -1,6 +1,7 @@
 package com.tome25.remotenotifications.utility;
 
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -76,14 +77,7 @@ public class IconHandler {
 	 * @throws IOException if reading the image fails.
 	 */
 	public static BufferedImage getImageScaled(String name, int width, int height) throws IOException {
-		BufferedImage image = getImage(name);
-		BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D graphics2D = resized.createGraphics();
-		graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-				RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-		graphics2D.drawImage(image, 0, 0, width, height, null);
-		graphics2D.dispose();
-		return resized;
+		return resizeImage(getImage(name), width, height);
 	}
 
 	/**
@@ -154,6 +148,45 @@ public class IconHandler {
 	 */
 	public static ImageIcon getIconScaled(String name, String description, int width, int height) throws IOException {
 		return new ImageIcon(getImageScaled(name, width, height), description);
+	}
+
+	/**
+	 * Resizes the given {@link Image} to the given size.
+	 * 
+	 * @param image  the {@link Image} to resize.
+	 * @param width  the target width.
+	 * @param height the target height.
+	 * @return the resized {@link BufferedImage}
+	 */
+	public static BufferedImage resizeImage(Image image, int width, int height) {
+		BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D graphics2D = resized.createGraphics();
+		graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+		graphics2D.drawImage(image, 0, 0, width, height, null);
+		graphics2D.dispose();
+		return resized;
+	}
+
+	/**
+	 * Adds padding to the given {@link Image}.
+	 * 
+	 * @param image   the {@link Image} to pad.
+	 * @param padding the amount of pixels padding that should be added on every
+	 *                side.
+	 * @return the padded {@link BufferedImage}
+	 */
+	public static BufferedImage padImage(Image image, int padding) {
+		int width = image.getWidth(null);
+		int height = image.getHeight(null);
+		BufferedImage padded = new BufferedImage(width + padding * 2, height + padding * 2,
+				BufferedImage.TYPE_INT_ARGB);
+		Graphics2D graphics2D = padded.createGraphics();
+		graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+		graphics2D.drawImage(image, padding, padding, width, height, null);
+		graphics2D.dispose();
+		return padded;
 	}
 
 }
