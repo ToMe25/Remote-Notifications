@@ -6,6 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.function.Consumer;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import com.tome25.remotenotifications.RemoteNotifications;
 
 /**
@@ -27,9 +30,23 @@ public class PopupManager {
 		configItem.addActionListener(new OptionListener(e -> RemoteNotifications.cfgWindow.show()));
 		popup.add(configItem);
 		MenuItem exitItem = new MenuItem("Exit");
-		exitItem.addActionListener(new OptionListener(e -> System.exit(0)));
+		exitItem.addActionListener(new OptionListener(e -> askExit()));
 		popup.add(exitItem);
 		return popup;
+	}
+
+	/**
+	 * Asks the user whether he really wants to exit.
+	 */
+	public static void askExit() {
+		JFrame frame = new JFrame();
+		frame.setIconImage(IconHandler.getLogoImage());
+		int i = JOptionPane.showConfirmDialog(frame, "Do you really want to exit Remote-Notifications?", "Confirm Exit",
+				JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		frame.dispose();
+		if (i < 1) {
+			System.exit(0);
+		}
 	}
 
 	public static class OptionListener implements ActionListener {
