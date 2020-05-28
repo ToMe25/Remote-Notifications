@@ -24,6 +24,10 @@ or
 
 to the client command to set the ports he is listening on, or to the server, to set what ports he is sending the data to.
 
+To change config options, you can either change them in the config file in the "Remote-Notifications-Config" directory next to the jar file,
+
+or using the Config Window that can be accessed by selecting the config option in the popup that appears when right-clicking the Tray Icon, or a Dialog style notification.
+
 ### Library
 If you want to send notifications from inside another application you will also need [ToMe25s-Java-Utilities](https://github.com/ToMe25/ToMe25s-Java-Utilities) as Remote-Notifications is based on that library.
 
