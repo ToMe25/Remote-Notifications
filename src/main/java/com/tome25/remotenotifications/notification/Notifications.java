@@ -23,6 +23,7 @@ public enum Notifications {
 	 * Initializes this notification enum.
 	 * 
 	 * @param notification the actual notification.
+	 * @param name         the name of this notification.
 	 */
 	private Notifications(INotification notification, String name) {
 		this.notification = notification;

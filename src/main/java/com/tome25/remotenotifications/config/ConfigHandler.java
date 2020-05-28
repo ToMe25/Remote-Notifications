@@ -87,7 +87,7 @@ public class ConfigHandler {
 	/**
 	 * Gets the config value for the given Name.
 	 * 
-	 * @param name the name of the config option to get.
+	 * @param option the name of the config option to get.
 	 * @return the config value for the given Name.
 	 */
 	public Object getConfig(String option) {
