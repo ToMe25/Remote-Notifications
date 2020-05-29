@@ -9,7 +9,7 @@ import com.tome25.remotenotifications.config.ConfigWindow;
 import com.tome25.remotenotifications.network.Receiver;
 import com.tome25.remotenotifications.network.Sender;
 import com.tome25.remotenotifications.utility.ArgumentParser;
-import com.tome25.remotenotifications.utility.DependencyChecker;
+import com.tome25.remotenotifications.utility.DependencyHandler;
 import com.tome25.remotenotifications.utility.VersionChecker;
 import com.tome25.utils.lib.LibraryDownloader;
 import com.tome25.utils.lib.LibraryLoader;
@@ -50,7 +50,11 @@ public class RemoteNotifications {
 			com.tome25.utils.logging.LogTracer.resetOut();// importing this would cause it to crash on loading.
 			printHelp();
 		} else if (arguments.containsKey("server") && arguments.get("server").equalsIgnoreCase("true")) {
-			initServer();
+			if (arguments.containsKey("no-downloads") && arguments.get("no-downloads").equalsIgnoreCase("true")) {
+				initServer(false);
+			} else {
+				initServer();
+			}
 			if (arguments.containsKey("address")) {
 				config.setConfig("client-address", arguments.get("address"));
 			}
@@ -74,7 +78,11 @@ public class RemoteNotifications {
 			System.out.println("Remote-Notifications version info");
 			printVersionInfo();
 		} else {
-			initClient();
+			if (arguments.containsKey("no-downloads") && arguments.get("no-downloads").equalsIgnoreCase("true")) {
+				initClient(false);
+			} else {
+				initClient();
+			}
 			if (arguments.containsKey("udpport")) {
 				config.setConfig("udp-port", Integer.parseInt(arguments.get("udpport")));
 			}
@@ -85,10 +93,20 @@ public class RemoteNotifications {
 	}
 
 	/**
-	 * Initializes the Server.
+	 * Initializes the Server. Downloads missing dependencies.
 	 */
 	public static void initServer() {
-		if (!DependencyChecker.checkDependencies()) {
+		initServer(true);
+	}
+
+	/**
+	 * Initializes the Server.
+	 * 
+	 * @param downloads whether missing dependencies should be downloaded.
+	 */
+	public static void initServer(boolean downloads) {
+		DependencyHandler.initDependencies();
+		if (!DependencyHandler.checkDependencies(downloads)) {
 			return;
 		}
 		try {
@@ -100,10 +118,20 @@ public class RemoteNotifications {
 	}
 
 	/**
-	 * Initializes the Client.
+	 * Initializes the Client. Downloads missing dependencies.
 	 */
 	public static void initClient() {
-		if (!DependencyChecker.checkDependencies()) {
+		initClient(true);
+	}
+
+	/**
+	 * Initializes the Client.
+	 * 
+	 * @param downloads whether missing dependencies should be downloaded.
+	 */
+	public static void initClient(boolean downloads) {
+		DependencyHandler.initDependencies();
+		if (!DependencyHandler.checkDependencies(downloads)) {
 			return;
 		}
 		try {
@@ -149,6 +177,7 @@ public class RemoteNotifications {
 		optionsHelp.put("tcpport=PORT", String.format(
 				"The port to use for tcp.%nOn the server this is the target port, on the client its the port to listen on.%nSet to 0 to disable tcp. Default is 3113."));
 		optionsHelp.put("version", "Prints version info and stops.");
+		optionsHelp.put("no-downloads", "Disables the downloading of missing dependencies.");
 		Map<String, String> optionsHelp1 = new LinkedHashMap<String, String>();
 		final int[] length = new int[] { 0 };
 		optionsHelp.keySet().forEach(key -> {

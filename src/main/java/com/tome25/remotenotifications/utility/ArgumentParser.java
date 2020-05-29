@@ -16,8 +16,8 @@ import java.util.Map;
  */
 public class ArgumentParser {
 
-	private static List<String> args = Arrays
-			.asList(new String[] { "help", "server", "header", "message", "address", "udpport", "tcpport", "version" });
+	private static List<String> args = Arrays.asList(new String[] { "help", "server", "header", "message", "address",
+			"udpport", "tcpport", "version", "no-downloads" });
 	public static final Map<String, List<String>> ARG_TO_ALIASSES;
 	public static final Map<String, String> ALIAS_TO_ARG;
 
@@ -31,6 +31,7 @@ public class ArgumentParser {
 		ARG_TO_ALIASSES.put("udpport", Arrays.asList(new String[] { "udp", "u" }));
 		ARG_TO_ALIASSES.put("tcpport", Arrays.asList(new String[] { "tcp", "t" }));
 		ARG_TO_ALIASSES.put("version", Arrays.asList(new String[] { "v" }));
+		ARG_TO_ALIASSES.put("no-downloads", Arrays.asList(new String[] { "nodownloads", "no-download", "nodownload" }));
 		ALIAS_TO_ARG = new HashMap<String, String>();
 		initAliasToArg();
 	}
@@ -51,8 +52,7 @@ public class ArgumentParser {
 				if (isValidArg(arg.replaceAll(" ", "").toLowerCase())) {
 					arguments.put(arg.replaceAll(" ", "").toLowerCase(), "true");
 				} else if (arg.contains(" ") && isValidArg(arg.trim().substring(0, arg.indexOf(' ')).toLowerCase())) {
-					arguments.put(arg.trim().substring(0, arg.indexOf(' ')).toLowerCase(),
-							"true");
+					arguments.put(arg.trim().substring(0, arg.indexOf(' ')).toLowerCase(), "true");
 					arguments.putAll(parse(splitArgs(arg.substring(arg.indexOf(' ') + 1))));
 				} else if (arg.contains("=") && isValidArg(arg.trim().substring(0, arg.indexOf('=')).toLowerCase())) {
 					arguments.put(arg.trim().substring(0, arg.indexOf('=')).toLowerCase(),

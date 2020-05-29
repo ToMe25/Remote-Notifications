@@ -43,7 +43,7 @@
     <dependency>
       <groupId>com.tome25.ToMe25s-Java-Utilities</groupId>
       <artifactId>ToMe25s-Java-Utilities</artifactId>
-      <version>1.0.127</version>
+      <version>1.0.130</version>
     </dependency>
     <dependency>
       <groupId>com.dorkbox</groupId>
