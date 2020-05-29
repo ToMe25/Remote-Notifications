@@ -31,10 +31,6 @@ public class DependencyHandler {
 				"com.tome25.utils.version.VersionControl"));
 		dependencies.add(new Dependency("jna", new int[] { 5, 2, 0 },
 				"https://repo1.maven.org/maven2/net/java/dev/jna/jna/5.5.0/jna-5.5.0.jar", "com.sun.jna.Version"));
-		dependencies.add(new Dependency("jna-platform", new int[] { 5, 2, 0 },
-				"https://repo1.maven.org/maven2/net/java/dev/jna/jna-platform/5.5.0/jna-platform-5.5.0.jar",
-				"com.tome25.remotenotifications.utility.DependencyHandler"));
-		// jna-platform can't be checked, because its platform dependent.
 		dependencies.add(new Dependency("slf4j", new int[] { 1, 7, 26 },
 				"https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar", "org.slf4j.Logger"));
 		dependencies.add(new Dependency("javassist", new int[] { 3, 24, 1 },
@@ -62,9 +58,14 @@ public class DependencyHandler {
 					VersionControl.getVersionArray(dep.getName()), dep.getVersion())) {
 				ok = false;
 				if (download) {
-					if (!new LibraryDownloader(dep.getUrlStorage(), dep.getUrlStorageContent(), true, false)
-							.downloadFile()) {
+					if (dep.getName().equals("jna")) {
+						Dependency jnaPlatformDep = new Dependency("jna-platform", new int[] { 5, 2, 0 },
+								"https://repo1.maven.org/maven2/net/java/dev/jna/jna-platform/5.5.0/jna-platform-5.5.0.jar",
+								"com.tome25.remotenotifications.utility.DependencyHandler");
+						new LibraryDownloader(jnaPlatformDep.getUrlStorage(), jnaPlatformDep.getUrlStorageContent(),
+								true, false).downloadFile();
 					}
+					new LibraryDownloader(dep.getUrlStorage(), dep.getUrlStorageContent(), true, false).downloadFile();
 				}
 			}
 		}
@@ -137,7 +138,7 @@ public class DependencyHandler {
 			ProcessBuilder pb = new ProcessBuilder("java", "-jar", codeSource.getAbsolutePath(),
 					stringArrayToString(
 							ManagementFactory.getRuntimeMXBean().getInputArguments().toArray(new String[0])),
-					LibraryLoader.getMainArgs() + "-no-downloads");
+					LibraryLoader.getMainArgs(), "-no-downloads");
 			pb.inheritIO();
 			try {
 				pb.start();
