@@ -7,10 +7,12 @@ package com.tome25.remotenotifications.notification;
  *
  */
 public enum Notifications {
-	TRAYICON_NONE(TrayIconNotification.NONE, "TrayIcon_none"),
-	TRAYICON_INFO(TrayIconNotification.INFO, "TrayIcon_info"),
-	TRAYICON_WARNING(TrayIconNotification.WARNING, "TrayIcon_warning"),
-	TRAYICON_ERROR(TrayIconNotification.ERROR, "TrayIcon_error"),
+	/**
+	 * TRAYICON_NONE(TrayIconNotification.NONE, "TrayIcon_none"),
+	 * TRAYICON_INFO(TrayIconNotification.INFO, "TrayIcon_info"),
+	 * TRAYICON_WARNING(TrayIconNotification.WARNING, "TrayIcon_warning"),
+	 * TRAYICON_ERROR(TrayIconNotification.ERROR, "TrayIcon_error"),
+	 */
 	DIALOG_LIGHT_FRAMELESS(DialogNotification.LIGHT_FRAMELESS, "Dialog_light_frameless"),
 	DIALOG_DARK_FRAMELESS(DialogNotification.DARK_FRAMELESS, "Dialog_dark_frameless"),
 	DIALOG_LIGHT_FRAMED(DialogNotification.LIGHT_FRAMED, "Dialog_light_framed"),
