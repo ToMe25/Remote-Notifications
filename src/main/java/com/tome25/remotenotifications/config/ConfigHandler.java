@@ -24,6 +24,7 @@ public class ConfigHandler {
 	public String clientAddress;
 	public int udpPort;
 	public int tcpPort;
+	public boolean confirmExit;
 
 	/**
 	 * creates a new ConfigHandler.
@@ -57,11 +58,14 @@ public class ConfigHandler {
 				"The port to listen on for notifications that are sent over udp.", "Set to 0 to disable udp handling.");
 		config.addConfig("client.cfg", "tcp-port", 3113,
 				"The port to listen on for notifications that are sent over tcp.", "Set to 0 to disable tcp handling.");
+		config.addConfig("client.cfg", "confirm-exit", true,
+				"Whether there should be a confirmation window before exiting Remote-Notifications.");
 		config.readConfig();
 		NotificationHandler.setNotification((String) config.getConfig("notification-style"));
 		NotificationHandler.setNotificationTime((int) config.getConfig("notification-time"));
 		udpPort = (int) config.getConfig("udp-port");
 		tcpPort = (int) config.getConfig("tcp-port");
+		confirmExit = (boolean) config.getConfig("confirm-exit");
 	}
 
 	/**
@@ -132,6 +136,7 @@ public class ConfigHandler {
 				}
 				RemoteNotifications.receiver = new Receiver(udpPort, tcpPort);
 			}
+			confirmExit = (boolean) config.getConfig("confirm-exit");
 		}
 		updateHandlers.forEach(handler -> handler.accept(this));
 	}
@@ -146,8 +151,8 @@ public class ConfigHandler {
 	}
 
 	/**
-	 * Registeres a {@link Consumer} that will be called with this ConfigHandler every time
-	 * the config file updates.
+	 * Registeres a {@link Consumer} that will be called with this ConfigHandler
+	 * every time the config file updates.
 	 * 
 	 * @param updateHandler the update handler.
 	 */

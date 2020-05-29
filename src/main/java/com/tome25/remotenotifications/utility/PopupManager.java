@@ -39,11 +39,14 @@ public class PopupManager {
 	 * Asks the user whether he really wants to exit.
 	 */
 	public static void askExit() {
-		JFrame frame = new JFrame();
-		frame.setIconImage(IconHandler.getLogoImage());
-		int i = JOptionPane.showConfirmDialog(frame, "Do you really want to exit Remote-Notifications?", "Confirm Exit",
-				JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-		frame.dispose();
+		int i = 0;
+		if (RemoteNotifications.config.confirmExit) {
+			JFrame frame = new JFrame();
+			frame.setIconImage(IconHandler.getLogoImage());
+			i = JOptionPane.showConfirmDialog(frame, "Do you really want to exit Remote-Notifications?", "Confirm Exit",
+					JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+			frame.dispose();
+		}
 		if (i < 1) {
 			System.exit(0);
 		}

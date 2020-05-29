@@ -17,6 +17,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -41,6 +42,7 @@ public class ConfigWindow {
 	private final ConfigHandler cfg;
 	private Map<String, NumberChangeListener> numberListeners = new HashMap<String, NumberChangeListener>();
 	private Map<String, EnumChangeListener> enumListeners = new HashMap<String, EnumChangeListener>();
+	private Map<String, BooleanChangeListener> booleanListeners = new HashMap<String, BooleanChangeListener>();
 
 	/**
 	 * Creates a new ConfigWindow.
@@ -75,6 +77,7 @@ public class ConfigWindow {
 		configPanel.add(createNumberSetting("notification-time", NotificationHandler.getNotificationTime()));
 		configPanel.add(createNumberSetting("udp-port", cfg.udpPort));
 		configPanel.add(createNumberSetting("tcp-port", cfg.tcpPort));
+		configPanel.add(createBooleanSetting("confirm-exit", cfg.confirmExit));
 		configPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
 				BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 		contentPane.add(configPanel, BorderLayout.CENTER);
@@ -96,8 +99,9 @@ public class ConfigWindow {
 	 * Updates this config window from the config file.
 	 */
 	public void update() {
-		numberListeners.forEach((name, listener) -> listener.field.setValue(cfg.getConfig(name)));
-		enumListeners.forEach((name, listener) -> listener.field.setSelectedItem(cfg.getConfig(name)));
+		numberListeners.forEach((name, listener) -> listener.textField.setValue(cfg.getConfig(name)));
+		enumListeners.forEach((name, listener) -> listener.comboBox.setSelectedItem(cfg.getConfig(name)));
+		booleanListeners.forEach((name, listener) -> listener.checkBox.setSelected((boolean) cfg.getConfig(name)));
 	}
 
 	/**
@@ -146,6 +150,26 @@ public class ConfigWindow {
 	}
 
 	/**
+	 * Creates a new settings panel for a boolean setting.
+	 * 
+	 * @param name  the name of the setting.
+	 * @param value its default value.
+	 * @return the settings panel.
+	 */
+	private JPanel createBooleanSetting(String name, boolean value) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		JLabel label = new JLabel(name);
+		JCheckBox checkBox = new JCheckBox("", value);
+		BooleanChangeListener listener = new BooleanChangeListener(name, checkBox);
+		checkBox.setAction(listener);
+		booleanListeners.put(name, listener);
+		panel.add(label, BorderLayout.LINE_START);
+		panel.add(checkBox, BorderLayout.LINE_END);
+		return panel;
+	}
+
+	/**
 	 * Gets this ConfigWindows window.
 	 * 
 	 * @return this ConfigWindows window.
@@ -164,22 +188,22 @@ public class ConfigWindow {
 	private class NumberChangeListener implements PropertyChangeListener {
 
 		private final String name;
-		private final JFormattedTextField field;
+		private final JFormattedTextField textField;
 
 		/**
 		 * Creates a new NumberChangeListener.
 		 * 
 		 * @param name      the name of the option to listen.
-		 * @param textField the text field to listen for changes on.
+		 * @param textField the {@link JFormattedTextField} to listen for changes on.
 		 */
 		private NumberChangeListener(String name, JFormattedTextField textField) {
 			this.name = name;
-			field = textField;
+			this.textField = textField;
 		}
 
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
-			cfg.setConfig(name, ((Number) field.getValue()).intValue());
+			cfg.setConfig(name, ((Number) textField.getValue()).intValue());
 		}
 
 	}
@@ -187,27 +211,55 @@ public class ConfigWindow {
 	private class EnumChangeListener implements ActionListener {
 
 		private final String name;
-		private final JComboBox<String> field;
+		private final JComboBox<String> comboBox;
 		private Object lastSelected;
 
 		/**
 		 * Creates a new EnumChangeListener.
 		 * 
 		 * @param name     the name of the option to listen.
-		 * @param comboBox the text field to listen for changes on.
+		 * @param comboBox the {@link JComboBox} to listen for changes on.
 		 */
 		private EnumChangeListener(String name, JComboBox<String> comboBox) {
 			this.name = name;
-			field = comboBox;
+			this.comboBox = comboBox;
 			lastSelected = comboBox.getSelectedItem();
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			if (field.getSelectedItem() != lastSelected) {
-				cfg.setConfig(name, field.getSelectedItem());
-				lastSelected = field.getSelectedItem();
+			if (comboBox.getSelectedItem() != lastSelected) {
+				cfg.setConfig(name, comboBox.getSelectedItem());
+				lastSelected = comboBox.getSelectedItem();
 			}
+		}
+
+	}
+
+	private class BooleanChangeListener extends AbstractAction {
+
+		/**
+		 * This classes serverialVersionUID.
+		 */
+		private static final long serialVersionUID = -5351813088252925510L;
+		private final String name;
+		private final JCheckBox checkBox;
+
+		/**
+		 * Creates a new BooleanChangeListener.
+		 * 
+		 * @param name     the name of the option to listen.
+		 * @param checkBox the {@link JCheckBox} to listen for changes on.
+		 */
+		private BooleanChangeListener(String name, JCheckBox checkBox) {
+			super("");
+			this.name = name;
+			this.checkBox = checkBox;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			cfg.setConfig(name, checkBox.isSelected());
 		}
 
 	}
