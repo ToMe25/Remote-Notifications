@@ -16,6 +16,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
 
 import com.tome25.remotenotifications.utility.IconHandler;
 import com.tome25.remotenotifications.utility.PopupManager;
@@ -133,13 +135,23 @@ public enum DialogNotification implements INotification {
 			constraints.gridy++;
 			constraints.insets = new Insets(5, 5, 5, 5);
 			constraints.fill = GridBagConstraints.BOTH;
-			JLabel messageLabel = new JLabel(message);
+			JTextArea messageArea = new JTextArea(message);
+			messageArea.setOpaque(false);
 			if (notificationType.dark) {
-				messageLabel.setForeground(DARK_TEXT_COLOR);
+				headingLabel.setForeground(DARK_TEXT_COLOR);
 			} else {
-				messageLabel.setForeground(LIGHT_TEXT_COLOR);
+				headingLabel.setForeground(LIGHT_TEXT_COLOR);
 			}
-			frame.add(messageLabel, constraints);
+			messageArea.setEditable(false);
+			messageArea.setBorder(new EmptyBorder(0, 0, 0, 0));
+			messageArea.setLineWrap(true);
+			messageArea.setWrapStyleWord(true);
+			if (notificationType.dark) {
+				messageArea.setForeground(DARK_TEXT_COLOR);
+			} else {
+				messageArea.setForeground(LIGHT_TEXT_COLOR);
+			}
+			frame.add(messageArea, constraints);
 			frame.setAlwaysOnTop(true);
 			frame.setVisible(true);
 			PopupMenu popup = PopupManager.createPopup();
