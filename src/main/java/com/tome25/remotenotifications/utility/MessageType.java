@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
  */
 public enum MessageType {
 
-	NONE(-1), INFO(1), QUESTION(3), WARNING(2), ERROR(0);
+	NONE(-1), INFO(1), QUESTION(3), WARN(2), ERROR(0);
 
 	private final int messageType;
 

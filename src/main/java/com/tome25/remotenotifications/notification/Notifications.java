@@ -18,10 +18,15 @@ public enum Notifications {
 	NOTIFY_DARK_INFO(NotifyNotification.DARK_INFO, "Notify_dark_info"),
 	NOTIFY_LIGHT_QUESTION(NotifyNotification.LIGHT_QUESTION, "Notify_light_question"),
 	NOTIFY_DARK_QUESTION(NotifyNotification.DARK_QUESTION, "Notify_dark_question"),
-	NOTIFY_LIGHT_WARNING(NotifyNotification.LIGHT_WARNING, "Notify_light_warning"),
-	NOTIFY_DARK_WARNING(NotifyNotification.DARK_WARNING, "Notify_dark_warning"),
+	NOTIFY_LIGHT_WARN(NotifyNotification.LIGHT_WARN, "Notify_light_warn"),
+	NOTIFY_DARK_WARN(NotifyNotification.DARK_WARN, "Notify_dark_warn"),
 	NOTIFY_LIGHT_ERROR(NotifyNotification.LIGHT_ERROR, "Notify_light_error"),
-	NOTIFY_DARK_ERROR(NotifyNotification.DARK_ERROR, "Notify_dark_error");
+	NOTIFY_DARK_ERROR(NotifyNotification.DARK_ERROR, "Notify_dark_error"),
+	OPTION_NONE(OptionNotification.NONE, "Option_none"),
+	OPTION_INFO(OptionNotification.INFO, "Option_info"),
+	OPTION_QUESTION(OptionNotification.QUESTION, "Option_question"),
+	OPTION_WARN(OptionNotification.WARN, "Option_warn"),
+	OPTION_ERROR(OptionNotification.ERROR, "Option_error");
 
 	private final INotification notification;
 	private final String name;

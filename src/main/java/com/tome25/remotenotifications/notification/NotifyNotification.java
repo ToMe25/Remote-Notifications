@@ -4,16 +4,28 @@ import com.tome25.remotenotifications.utility.MessageType;
 
 import dorkbox.notify.Notify;
 
+/**
+ * A Notification based on dorkbox Notify library.
+ * 
+ * @author ToMe25
+ *
+ */
 public enum NotifyNotification implements INotification {
 
 	LIGHT_NONE(MessageType.NONE, false), DARK_NONE(MessageType.NONE, true), LIGHT_INFO(MessageType.INFO, false),
 	DARK_INFO(MessageType.INFO, true), LIGHT_QUESTION(MessageType.QUESTION, false),
-	DARK_QUESTION(MessageType.QUESTION, true), LIGHT_WARNING(MessageType.WARNING, false),
-	DARK_WARNING(MessageType.WARNING, true), LIGHT_ERROR(MessageType.ERROR, false), DARK_ERROR(MessageType.ERROR, true);
+	DARK_QUESTION(MessageType.QUESTION, true), LIGHT_WARN(MessageType.WARN, false),
+	DARK_WARN(MessageType.WARN, true), LIGHT_ERROR(MessageType.ERROR, false), DARK_ERROR(MessageType.ERROR, true);
 
 	private final MessageType type;
 	private final boolean dark;
 
+	/**
+	 * Creates a new NotifyNotification.
+	 * 
+	 * @param type the icon for the notification.
+	 * @param dark whether this notification should be dark, or light.
+	 */
 	private NotifyNotification(MessageType type, boolean dark) {
 		this.type = type;
 		this.dark = dark;
@@ -34,15 +46,15 @@ public enum NotifyNotification implements INotification {
 		case INFO:
 			notify.showInformation();
 			break;
-			
+
 		case QUESTION:
 			notify.showConfirm();
 			break;
-			
-		case WARNING:
+
+		case WARN:
 			notify.showWarning();
 			break;
-			
+
 		case ERROR:
 			notify.showError();
 			break;
