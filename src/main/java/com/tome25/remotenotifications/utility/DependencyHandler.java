@@ -2,7 +2,9 @@ package com.tome25.remotenotifications.utility;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.tome25.utils.lib.LibraryDownloader;
@@ -48,7 +50,7 @@ public class DependencyHandler {
 		dependencies.add(new Dependency("TweenEngine", new int[] { 8, 3 },
 				"https://repo1.maven.org/maven2/com/dorkbox/TweenEngine/8.3/TweenEngine-8.3.jar",
 				"dorkbox.tweenEngine.Tween"));
-		dependencies.add(new Dependency("Notify", new int[] { 3, 7 },
+		dependencies.add(new Dependency("Notify", new int[] { 3, 6 },
 				"https://repo1.maven.org/maven2/com/dorkbox/Notify/3.7/Notify-3.7.jar", "dorkbox.notify.Notify"));
 	}
 
@@ -62,8 +64,7 @@ public class DependencyHandler {
 	public static boolean checkDependencies(boolean download) {
 		boolean ok = true;
 		for (Dependency dep : dependencies) {
-			if (!isLoaded(dep.getCheckClass()) || !checkDependency(dep.getName(),
-					VersionControl.getVersionArray(dep.getName()), dep.getVersion())) {
+			if (!isLoaded(dep.getCheckClass()) || !checkDependency(dep)) {
 				ok = false;
 				if (download) {
 					if (dep.getName().equals("jna")) {
@@ -86,6 +87,27 @@ public class DependencyHandler {
 
 	/**
 	 * Checks whether the given library is at least at the required version number.
+	 */
+	private static boolean checkDependency(Dependency dep) {
+		if (isLoaded(dep.getCheckClass())) {
+			try {
+				Class<?> checkClass = Class.forName(dep.getCheckClass());
+				Method getVersion = checkClass.getDeclaredMethod("getVersion");
+				Object version = getVersion.invoke(null);
+				if (version instanceof String) {
+					VersionControl.setVersionString(dep.getName(), (String) version);
+				} else if (version instanceof int[]) {
+					VersionControl.setVersionArray(dep.getName(), (int[]) version);
+				}
+			} catch (Exception e) {
+				// ignore exceptions.
+			}
+		}
+		return checkDependency(dep.getName(), VersionControl.getVersionArray(dep.getName()), dep.getVersion());
+	}
+
+	/**
+	 * Checks whether the given library is at least at the required version number.
 	 * 
 	 * @param name     the name of the library.
 	 * @param current  the currently used version of the library.
@@ -93,21 +115,15 @@ public class DependencyHandler {
 	 * @return whether the given library is at least at the required version number.
 	 */
 	private static boolean checkDependency(String name, int[] current, int[] required) {
-		if (current == null || current.length == 0 || current.equals(new int[] { 1, 0 })) {
+		if (current == null || current.length == 0 || Arrays.equals(current, new int[] { 1, 0 })) {
 			// the library probably can't give us the actual version number.
 			return true;
 		}
-		if (current.length < required.length) {
-			System.err.format(
-					"Remote-Notifications requires atleast version %s of %s, but the currently used version is %s.%n",
-					versionArrayToString(required), name, versionArrayToString(current));
-			return false;
-		}
-		int i = 0;
-		boolean less = false;
-		while (i < current.length) {
-			less = less && current[i] <= required[i] || current[i] < required[i];
-			i++;
+		int length = Math.min(current.length, required.length);
+		boolean less = current.length < required.length;
+		while (length > 0) {
+			length--;
+			less = less && current[length] <= required[length] || current[length] < required[length];
 		}
 		if (less) {
 			System.err.format(
