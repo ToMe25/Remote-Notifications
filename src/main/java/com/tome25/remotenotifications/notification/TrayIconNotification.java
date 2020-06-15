@@ -11,6 +11,7 @@ import com.tome25.remotenotifications.RemoteNotifications;
  * @author ToMe25
  *
  */
+@Deprecated
 public enum TrayIconNotification implements INotification {
 
 	NONE(MessageType.NONE), INFO(MessageType.INFO), WARNING(MessageType.WARNING), ERROR(MessageType.ERROR);

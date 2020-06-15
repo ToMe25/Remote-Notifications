@@ -7,16 +7,21 @@ package com.tome25.remotenotifications.notification;
  *
  */
 public enum Notifications {
-	/**
-	 * TRAYICON_NONE(TrayIconNotification.NONE, "TrayIcon_none"),
-	 * TRAYICON_INFO(TrayIconNotification.INFO, "TrayIcon_info"),
-	 * TRAYICON_WARNING(TrayIconNotification.WARNING, "TrayIcon_warning"),
-	 * TRAYICON_ERROR(TrayIconNotification.ERROR, "TrayIcon_error"),
-	 */
+
 	DIALOG_LIGHT_FRAMELESS(DialogNotification.LIGHT_FRAMELESS, "Dialog_light_frameless"),
 	DIALOG_DARK_FRAMELESS(DialogNotification.DARK_FRAMELESS, "Dialog_dark_frameless"),
 	DIALOG_LIGHT_FRAMED(DialogNotification.LIGHT_FRAMED, "Dialog_light_framed"),
-	DIALOG_DARK_FRAMED(DialogNotification.DARK_FRAMED, "Dialog_dark_framed");
+	DIALOG_DARK_FRAMED(DialogNotification.DARK_FRAMED, "Dialog_dark_framed"),
+	NOTIFY_LIGHT_NONE(NotifyNotification.LIGHT_NONE, "Notify_light_none"),
+	NOTIFY_DARK_NONE(NotifyNotification.DARK_NONE, "Notify_dark_none"),
+	NOTIFY_LIGHT_INFO(NotifyNotification.LIGHT_INFO, "Notify_light_info"),
+	NOTIFY_DARK_INFO(NotifyNotification.DARK_INFO, "Notify_dark_info"),
+	NOTIFY_LIGHT_QUESTION(NotifyNotification.LIGHT_QUESTION, "Notify_light_question"),
+	NOTIFY_DARK_QUESTION(NotifyNotification.DARK_QUESTION, "Notify_dark_question"),
+	NOTIFY_LIGHT_WARNING(NotifyNotification.LIGHT_WARNING, "Notify_light_warning"),
+	NOTIFY_DARK_WARNING(NotifyNotification.DARK_WARNING, "Notify_dark_warning"),
+	NOTIFY_LIGHT_ERROR(NotifyNotification.LIGHT_ERROR, "Notify_light_error"),
+	NOTIFY_DARK_ERROR(NotifyNotification.DARK_ERROR, "Notify_dark_error");
 
 	private final INotification notification;
 	private final String name;

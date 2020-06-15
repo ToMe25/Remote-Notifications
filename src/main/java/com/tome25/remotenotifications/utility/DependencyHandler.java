@@ -42,6 +42,14 @@ public class DependencyHandler {
 		dependencies.add(new Dependency("SystemTray", new int[] { 3, 1, 17 },
 				"https://repo1.maven.org/maven2/com/dorkbox/SystemTray/3.17/SystemTray-3.17.jar",
 				"dorkbox.systemTray.SystemTray"));
+		dependencies.add(new Dependency("ObjectPool", new int[] { 2, 11 },
+				"https://repo1.maven.org/maven2/com/dorkbox/ObjectPool/2.12/ObjectPool-2.12.jar",
+				"dorkbox.objectPool.Pool"));
+		dependencies.add(new Dependency("TweenEngine", new int[] { 8, 3 },
+				"https://repo1.maven.org/maven2/com/dorkbox/TweenEngine/8.3/TweenEngine-8.3.jar",
+				"dorkbox.tweenEngine.Tween"));
+		dependencies.add(new Dependency("Notify", new int[] { 3, 7 },
+				"https://repo1.maven.org/maven2/com/dorkbox/Notify/3.7/Notify-3.7.jar", "dorkbox.notify.Notify"));
 	}
 
 	/**

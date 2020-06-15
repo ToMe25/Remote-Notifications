@@ -48,8 +48,10 @@ public class ConfigHandler {
 	private void initClientConfig() {
 		config.addConfig("client.cfg", "notification-style", "Dialog_dark_frameless",
 				"The style of notification you want to see when receiving some notification to display.",
-				"Valid Options are: TrayIcon_none, TrayIcon_info, TrayIcon_warning, TrayIcon_error,",
-				"Dialog_light_frameless, Dialog_dark_frameless, Dialog_light_framed, Dialog_dark_framed.");
+				"Valid Options are: Notify_light_none, Notify_dark_none, Notify_light_info, Notify_dark_info,",
+				"Notify_light_question, Notify_dark_question, Notify_light_warning, Notify_dark_warning,",
+				"Notify_light_error, Notify_dark_errir, Dialog_light_frameless, Dialog_dark_frameless,",
+				"Dialog_light_framed, Dialog_dark_framed.");
 		config.addConfig("client.cfg", "notification-time", 10,
 				"Some notification styles have a limited lifetime after which they dissappear, this setting controls that time.",
 				"In seconds. Set to 0 to stop it from disappearing by itself.");
@@ -146,8 +148,8 @@ public class ConfigHandler {
 	}
 
 	/**
-	 * Registeres a {@link Consumer} that will be called with this ConfigHandler every time
-	 * the config file updates.
+	 * Registeres a {@link Consumer} that will be called with this ConfigHandler
+	 * every time the config file updates.
 	 * 
 	 * @param updateHandler the update handler.
 	 */

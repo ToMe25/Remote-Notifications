@@ -37,7 +37,7 @@ public class NotificationHandler {
 	}
 
 	/**
-	 * sets the time notifications are displayed. if applicable.
+	 * Sets the time notifications are displayed. if applicable.
 	 * 
 	 * @param notificationTime the time to display future notifications.
 	 */
@@ -46,7 +46,7 @@ public class NotificationHandler {
 	}
 
 	/**
-	 * gets the time to display notifications.
+	 * Gets the time to display notifications. In seconds.
 	 * 
 	 * @return the time to display notifications.
 	 */
