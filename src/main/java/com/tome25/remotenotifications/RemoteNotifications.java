@@ -4,12 +4,11 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.tome25.remotenotifications.config.ConfigHandler;
-import com.tome25.remotenotifications.config.ConfigWindow;
-import com.tome25.remotenotifications.network.Receiver;
-import com.tome25.remotenotifications.network.Sender;
+import com.tome25.remotenotifications.client.Client;
+import com.tome25.remotenotifications.client.config.ClientConfig;
+import com.tome25.remotenotifications.server.Server;
+import com.tome25.remotenotifications.server.config.ServerConfig;
 import com.tome25.remotenotifications.utility.ArgumentParser;
-import com.tome25.remotenotifications.utility.DependencyChecker;
 import com.tome25.remotenotifications.utility.VersionChecker;
 import com.tome25.utils.lib.LibraryDownloader;
 import com.tome25.utils.lib.LibraryLoader;
@@ -23,11 +22,8 @@ import com.tome25.utils.version.VersionControl;
  */
 public class RemoteNotifications {
 
-	public static Receiver receiver;
-	public static Sender sender;
-	public static TrayIconManager icon;
-	public static ConfigHandler config;
-	public static ConfigWindow cfgWindow;
+	public static Client client;
+	public static Server server;
 
 	/**
 	 * This programs main method.
@@ -50,19 +46,19 @@ public class RemoteNotifications {
 			com.tome25.utils.logging.LogTracer.resetOut();// importing this would cause it to crash on loading.
 			printHelp();
 		} else if (arguments.containsKey("server") && arguments.get("server").equalsIgnoreCase("true")) {
-			initServer();
+			server = new Server();
 			if (arguments.containsKey("address")) {
-				config.setConfig("client-address", arguments.get("address"));
+				server.getConfig().setConfig(ServerConfig.CLIENT_ADDRESS, arguments.get("address"));
 			}
 			if (arguments.containsKey("udpport")) {
-				config.setConfig("client-udp-port", Integer.parseInt(arguments.get("udpport")));
+				server.getConfig().setConfig(ServerConfig.CLIENT_UDP_PORT, Integer.parseInt(arguments.get("udpport")));
 			}
 			if (arguments.containsKey("tcpport")) {
-				config.setConfig("client-tcp-port", Integer.parseInt(arguments.get("tcpport")));
+				server.getConfig().setConfig(ServerConfig.CLIENT_TCP_PORT, Integer.parseInt(arguments.get("tcpport")));
 			}
 			if (arguments.containsKey("header") && arguments.containsKey("message")) {
 				try {
-					sender.send(arguments.get("header"), arguments.get("message"));
+					server.getSender().send(arguments.get("header"), arguments.get("message"));
 					System.out.format("Sent a notification with header \"%s\" and message \"%s\".",
 							arguments.get("header"), arguments.get("message"));
 				} catch (Exception e) {
@@ -74,45 +70,13 @@ public class RemoteNotifications {
 			System.out.println("Remote-Notifications version info");
 			printVersionInfo();
 		} else {
-			initClient();
+			client = new Client();
 			if (arguments.containsKey("udpport")) {
-				config.setConfig("udp-port", Integer.parseInt(arguments.get("udpport")));
+				client.getConfig().setConfig(ClientConfig.UDP_PORT, Integer.parseInt(arguments.get("udpport")));
 			}
 			if (arguments.containsKey("tcpport")) {
-				config.setConfig("tcp-port", Integer.parseInt(arguments.get("tcpport")));
+				client.getConfig().setConfig(ClientConfig.TCP_PORT, Integer.parseInt(arguments.get("tcpport")));
 			}
-		}
-	}
-
-	/**
-	 * Initializes the Server.
-	 */
-	public static void initServer() {
-		if (!DependencyChecker.checkDependencies()) {
-			return;
-		}
-		try {
-			config = new ConfigHandler(true);
-			sender = new Sender(config.clientAddress, config.udpPort, config.tcpPort);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Initializes the Client.
-	 */
-	public static void initClient() {
-		if (!DependencyChecker.checkDependencies()) {
-			return;
-		}
-		try {
-			icon = new TrayIconManager();
-			config = new ConfigHandler(false);
-			cfgWindow = new ConfigWindow(config);
-			receiver = new Receiver(config.udpPort, config.tcpPort);
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 

@@ -1,12 +1,15 @@
-package com.tome25.remotenotifications;
+package com.tome25.remotenotifications.client.utility;
 
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
 
-import com.tome25.remotenotifications.utility.IconHandler;
-import com.tome25.remotenotifications.utility.PopupManager;
-
+/**
+ * The class handling all the {@link SystemTray} stuff.
+ * 
+ * @author ToMe25
+ *
+ */
 public class TrayIconManager {
 
 	private TrayIcon trayIcon;

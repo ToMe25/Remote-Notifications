@@ -1,5 +1,12 @@
-package com.tome25.remotenotifications.notification;
+package com.tome25.remotenotifications.client.notification;
 
+/**
+ * The utility class handling the notification type, and showing the
+ * notifications.
+ * 
+ * @author ToMe25
+ *
+ */
 public class NotificationHandler {
 
 	private static INotification notification;

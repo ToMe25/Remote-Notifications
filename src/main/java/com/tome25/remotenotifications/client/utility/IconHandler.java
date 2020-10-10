@@ -1,4 +1,4 @@
-package com.tome25.remotenotifications.utility;
+package com.tome25.remotenotifications.client.utility;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;

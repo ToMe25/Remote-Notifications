@@ -1,4 +1,4 @@
-package com.tome25.remotenotifications.notification;
+package com.tome25.remotenotifications.client.notification;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -19,8 +19,8 @@ import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
-import com.tome25.remotenotifications.utility.IconHandler;
-import com.tome25.remotenotifications.utility.PopupManager;
+import com.tome25.remotenotifications.client.utility.IconHandler;
+import com.tome25.remotenotifications.client.utility.PopupManager;
 
 /**
  * Notifications based on {@link JDialog}s.

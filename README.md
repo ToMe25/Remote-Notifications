@@ -31,34 +31,52 @@ or using the Config Window that can be accessed by selecting the config option i
 ### Library
 If you want to send notifications from inside another application you will also need [ToMe25s-Java-Utilities](https://github.com/ToMe25/ToMe25s-Java-Utilities) as Remote-Notifications is based on that library.
 
-After you have sorted out all the dependency stuff, you just need to invoke
-```java
-RemoteNotifications.initClient();
-```
-to start the client, or
-```java
-RemoteNotifications.initServer();
-```
-to start the Notifications server, which will read its config file, and initialize some stuff.
+After you have sorted out all the dependency stuff, you just need to create a new instance of `com.tome25.remotenotifications.client.Client` to start a client,
+or a new instance of `com.tome25.remotenotifications.server.Server` to start a server.
+Both of them will automatically read their config file, and initialize everything they need.
 
-To use the server you need to then invoke
+You can use the server like this
 ```java
-RemoteNotifications.sender.send(HEADER, MESSAGE);
+Server server = new Server();
+server.getSender().send("HEADER", "MESSAGE");
 ```
 to send a notification to the client set in the config file.
 
-If you for some reason want to change the client from code, you can do that with
+If you for want to change the config with code, you can do that like this
 ```java
-RemoteNotifications.config.setConfig("client-address", ADDRESS);
+Client client = new Client();
+client.getConfig().setConfig("PROPERTY", "VALUE");
 ```
-for the address,
+for the client and like this
 ```java
-RemoteNotifications.config.setConfig("client-udp-port", PORT);
+Server server = new Server();
+server.getConfig().setConfig("PROPERTY", "VALUE");
 ```
-for the client udp port and
-```java
-RemoteNotifications.config.setConfig("client-tcp-port", PORT);
-```
-for the client tcp port.
+for the server.
+Both of them will automatically write that to the config file.
 
-This will be written to the config file.
+If you want to get config properties you can do that like this
+```java
+Client client = new Client();
+Object value = client.getConfig().getConfig("PROPERTY");
+```
+for the client and like this
+```java
+Server server = new Server();
+Object value = server.getConfig().getConfig("PROPERTY");
+```
+for the server.
+
+#### Client config properties:
+ * notification-style
+ * notification-time
+ * udp-port
+ * tcp-port
+ * confirm-exit
+These can also be found as constants in `com.tome25.remotenotifications.client.config.ClientConfig`.
+
+#### Server config properties:
+ * client-address
+ * client-udp-port
+ * client-tcp-port
+These can also be found as constants in `com.tome25.remotenotifications.server.config.ServerConfig`.

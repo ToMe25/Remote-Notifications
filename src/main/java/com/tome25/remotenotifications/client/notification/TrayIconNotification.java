@@ -1,4 +1,4 @@
-package com.tome25.remotenotifications.notification;
+package com.tome25.remotenotifications.client.notification;
 
 import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
@@ -28,7 +28,7 @@ public enum TrayIconNotification implements INotification {
 
 	@Override
 	public void display(String header, String message) {
-		RemoteNotifications.icon.displayMessage(header, message, type);
+		RemoteNotifications.client.getIconManager().displayMessage(header, message, type);
 	}
 
 }

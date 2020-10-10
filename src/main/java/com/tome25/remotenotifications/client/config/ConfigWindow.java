@@ -1,4 +1,4 @@
-package com.tome25.remotenotifications.config;
+package com.tome25.remotenotifications.client.config;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -25,10 +25,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
-import com.tome25.remotenotifications.notification.NotificationHandler;
-import com.tome25.remotenotifications.notification.Notifications;
-import com.tome25.remotenotifications.utility.IconHandler;
-import com.tome25.remotenotifications.utility.PopupManager;
+import com.tome25.remotenotifications.client.notification.Notifications;
+import com.tome25.remotenotifications.client.utility.IconHandler;
+import com.tome25.remotenotifications.client.utility.PopupManager;
+import com.tome25.remotenotifications.config.ConfigHandler;
 
 /**
  * A gui to change the client config options.
@@ -39,7 +39,7 @@ import com.tome25.remotenotifications.utility.PopupManager;
 public class ConfigWindow {
 
 	private JFrame window;
-	private final ConfigHandler cfg;
+	private final ClientConfig cfg;
 	private Map<String, NumberChangeListener> numberListeners = new HashMap<String, NumberChangeListener>();
 	private Map<String, EnumChangeListener> enumListeners = new HashMap<String, EnumChangeListener>();
 	private Map<String, BooleanChangeListener> booleanListeners = new HashMap<String, BooleanChangeListener>();
@@ -49,7 +49,7 @@ public class ConfigWindow {
 	 * 
 	 * @param config the {@link ConfigHandler} to edit.
 	 */
-	public ConfigWindow(ConfigHandler config) {
+	public ConfigWindow(ClientConfig config) {
 		cfg = config;
 		cfg.registerUpdateHandler(cfg -> update());
 		initWindow();
@@ -73,11 +73,11 @@ public class ConfigWindow {
 		configPanel.setPreferredSize(new Dimension(380, 200));
 		configPanel.setLayout(new BoxLayout(configPanel, BoxLayout.PAGE_AXIS));
 		configPanel.add(createEnumSetting("notification-style", Notifications.names(),
-				(String) cfg.getConfig("notification-style")));
-		configPanel.add(createNumberSetting("notification-time", NotificationHandler.getNotificationTime()));
-		configPanel.add(createNumberSetting("udp-port", cfg.udpPort));
-		configPanel.add(createNumberSetting("tcp-port", cfg.tcpPort));
-		configPanel.add(createBooleanSetting("confirm-exit", cfg.confirmExit));
+				(String) cfg.getConfig(ClientConfig.NOTIFICATION_STYLE)));
+		configPanel.add(createNumberSetting("notification-time", (int) cfg.getConfig(ClientConfig.NOTIFICATION_TIME)));
+		configPanel.add(createNumberSetting("udp-port", (int) cfg.getConfig(ClientConfig.UDP_PORT)));
+		configPanel.add(createNumberSetting("tcp-port", (int) cfg.getConfig(ClientConfig.TCP_PORT)));
+		configPanel.add(createBooleanSetting("confirm-exit", cfg.confirmExit()));
 		configPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
 				BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 		contentPane.add(configPanel, BorderLayout.CENTER);

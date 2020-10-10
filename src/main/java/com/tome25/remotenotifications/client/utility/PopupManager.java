@@ -1,4 +1,4 @@
-package com.tome25.remotenotifications.utility;
+package com.tome25.remotenotifications.client.utility;
 
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -27,7 +27,7 @@ public class PopupManager {
 	public static PopupMenu createPopup() {
 		PopupMenu popup = new PopupMenu();
 		MenuItem configItem = new MenuItem("Config");
-		configItem.addActionListener(new OptionListener(e -> RemoteNotifications.cfgWindow.show()));
+		configItem.addActionListener(new OptionListener(e -> RemoteNotifications.client.getConfigWindow().show()));
 		popup.add(configItem);
 		MenuItem exitItem = new MenuItem("Exit");
 		exitItem.addActionListener(new OptionListener(e -> askExit()));
@@ -40,7 +40,7 @@ public class PopupManager {
 	 */
 	public static void askExit() {
 		int i = 0;
-		if (RemoteNotifications.config.confirmExit) {
+		if (RemoteNotifications.client.getConfig().confirmExit()) {
 			JFrame frame = new JFrame();
 			frame.setIconImage(IconHandler.getLogoImage());
 			i = JOptionPane.showConfirmDialog(frame, "Do you really want to exit Remote-Notifications?", "Confirm Exit",

@@ -1,4 +1,4 @@
-package com.tome25.remotenotifications.notification;
+package com.tome25.remotenotifications.client.notification;
 
 /**
  * The interface all Notifications should implement.
