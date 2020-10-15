@@ -2,9 +2,10 @@ package com.tome25.remotenotifications.network;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import com.tome25.utils.json.JsonElement;
 import com.tome25.utils.json.JsonParser;
@@ -26,11 +27,11 @@ public class TCPListener extends AbstractListener {
 	 * specified port.
 	 * 
 	 * @param port           the port to listen on.
-	 * @param receiveHandler the consumer to call when receiving a
-	 *                       {@link JsonElement}.
+	 * @param receiveHandler the consumer to give the received {@link JsonElement}s
+	 *                       and the senders {@link INetAddress} to.
 	 * @throws IOException if initializing the {@link ServerSocket} fails.
 	 */
-	public TCPListener(int port, Consumer<JsonElement> receiveHandler) throws IOException {
+	public TCPListener(int port, BiConsumer<JsonElement, InetAddress> receiveHandler) throws IOException {
 		super("Remote-Notifications-TCP-Listener", receiveHandler);
 		this.port = port;
 		socket = new ServerSocket(port);
@@ -56,7 +57,7 @@ public class TCPListener extends AbstractListener {
 				byte[] buffer = new byte[sIn.available()];
 				sIn.read(buffer);
 				JsonElement received = JsonParser.parseByteArray(buffer);
-				handler.accept(received);
+				handler.accept(received, soc.getInetAddress());
 				soc.close();
 			} catch (Exception e) {
 				if (!isRunning()) {

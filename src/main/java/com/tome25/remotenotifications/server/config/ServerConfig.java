@@ -1,6 +1,8 @@
 package com.tome25.remotenotifications.server.config;
 
 import com.tome25.remotenotifications.config.ConfigHandler;
+import com.tome25.remotenotifications.network.UDPTCPAddress;
+import com.tome25.utils.json.JsonArray;
 
 /**
  * The server config handler. This class handles the client config file, reading
@@ -13,30 +15,34 @@ import com.tome25.remotenotifications.config.ConfigHandler;
 public class ServerConfig extends ConfigHandler {
 
 	/**
-	 * The property name for the client address.
+	 * The property name for the clients list.
 	 */
-	public static final String CLIENT_ADDRESS = "client-address";
+	public static final String CLIENTS = "clients";
 	/**
-	 * The property name for the client udp port.
+	 * The property name for the udp port the server listens to.
 	 */
-	public static final String CLIENT_UDP_PORT = "client-udp-port";
+	public static final String UDP_PORT = "udp-port";
 	/**
-	 * The property name for the client tcp port.
+	 * The property name for the tcp port the server listens to.
 	 */
-	public static final String CLIENT_TCP_PORT = "client-tcp-port";
-	
+	public static final String TCP_PORT = "tcp-port";
+
 	@Override
 	public void initConfig() {
-		getConfig().addConfig("server.cfg", CLIENT_ADDRESS, "localhost",
-				"The address of the device that should receive the notifications.");
-		getConfig().addConfig("server.cfg", CLIENT_UDP_PORT, 3112,
-				"The port of the client to send notifications to over udp.",
-				"The server will only send notifications over udp if tcp is disabled, or the transmission fails.",
-				"Set to 0 to disable udp sending.");
-		getConfig().addConfig("server.cfg", CLIENT_TCP_PORT, 3113,
-				"The port of the client to send notifications to over tcp.",
-				"The server will try to send notifications over tcp first, and fall back to udp if that fails.",
-				"Set to 0 to disable tcp sending.");
+		getConfig().addConfig("server.cfg", CLIENTS, new JsonArray(new UDPTCPAddress("localhost", 3112, 3113).toJson()),
+				"A list of clients to send the notifications to.",
+				"The server will try to send notifications over tcp first, and fall back to udp if that fails,",
+				"if both are enabled. To disable one of the protocols set its port to 0.",
+				"The json format used for this list works like this: ",
+				"[{\"addr\": \"CLIENT_1_ADDRESS\", \"udp\": CLIENT_1_UDP_PORT, \"tcp\": CLIENT_1_TCP_PORT},",
+				"{\"addr\": \"CLIENT_2_ADDRESS\", \"udp\": CLIENT_2_UDP_PORT, \"tcp\": CLIENT_2_TCP_PORT\"}]",
+				"Note that you can add as many clients as you want.",
+				"Also json expects Strings(like the address) to be in double quots,",
+				"while it expects numbers(the ports) not to be in any quotes.");
+		getConfig().addConfig("server.cfg", UDP_PORT, 3114, "The udp port to listen on for notification requests.",
+				"Set to 0 to disable.");
+		getConfig().addConfig("server.cfg", TCP_PORT, 3115, "The tcp port to listen on for notification requests.",
+				"Set to 0 to disable.");
 		getConfig().readConfig();
 		updateConfig();
 	}

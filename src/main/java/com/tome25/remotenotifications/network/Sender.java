@@ -6,46 +6,50 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.tome25.utils.json.JsonElement;
 import com.tome25.utils.json.JsonObject;
 
 /**
- * The class sending the notifications to the client.
+ * The class sending the notifications to the clients.
  * 
  * @author ToMe25
  *
  */
 public class Sender {
 
-	private String address;
-	private int udpPort;
-	private int tcpPort;
 	private final DatagramSocket udpSocket;
 	private DatagramPacket packet;
+	private List<UDPTCPAddress> receivers;
 
 	/**
-	 * creates a new Sender sending to the specified port of the specified device.
+	 * Creates a new Sender sending to the specified port of the specified device.
 	 * 
-	 * @param receiver the target address.
-	 * @param udpPort  the target udp port. set to 0 to disable.
-	 * @param tcpPort  the target tcp port. set to 0 to disable.
-	 * @throws SocketException      if the creation of the Socket fails.
-	 * @throws UnknownHostException if no IP address for the host could be found, or
-	 *                              if a scope_id was specified for a global IPv6
-	 *                              address.
+	 * @param receivers the list of addresses to send the messages to. This is the
+	 *                  list that will end up getting used, so changing it will
+	 *                  change where packets get send to.
+	 * @throws SocketException if the creation of the Socket fails.
 	 */
-	public Sender(String receiver, int udpPort, int tcpPort) throws SocketException, UnknownHostException {
+	public Sender(List<UDPTCPAddress> receivers) throws SocketException {
+		this.receivers = receivers;
 		udpSocket = new DatagramSocket();
-		this.address = receiver;
-		this.udpPort = udpPort;
-		this.tcpPort = tcpPort;
 	}
 
 	/**
-	 * Sends the given message to this senders target.
+	 * Sets the addresses to send the messages to.
+	 * 
+	 * @param receivers the list of addresses to send the messages to. This is the
+	 *                  list that will end up getting used, so changing it will
+	 *                  change where packets get send to.
+	 */
+	public void setReceivers(List<UDPTCPAddress> receivers) {
+		this.receivers = receivers;
+	}
+
+	/**
+	 * Sends the given notification to this senders receivers.
 	 * 
 	 * @param header  the notification header.
 	 * @param message the notification message.
@@ -57,30 +61,66 @@ public class Sender {
 	}
 
 	/**
-	 * Sends the given json object to this senders target.
+	 * Sends the client ports to this senders receivers.
+	 * 
+	 * @param udp the udp port of this client.
+	 * @param tcp the tcp port of this client.
+	 */
+	public void send(int udp, int tcp) {
+		JsonObject json = new JsonObject("udp", udp);
+		json.add("tcp", tcp);
+		send(json);
+	}
+
+	/**
+	 * Sends the given json object to this senders clients.
 	 * 
 	 * @param message the message to send. should be
 	 *                '{"header":"HEADER","message":"MESSAGE"}'
 	 */
 	public void send(JsonElement message) {
 		send(message, e -> {
-			if (!(e instanceof ConnectException) || (udpPort < 1 || tcpPort < 1)) {
+			if (!(e instanceof ConnectException)) {
 				e.printStackTrace();
 			}
 		});
 	}
 
 	/**
-	 * Sends the given json object to this senders target.
+	 * Sends the given json object to this senders clients.
 	 * 
 	 * @param message          the message to send. should be
 	 *                         '{"header":"HEADER","message":"MESSAGE"}'
 	 * @param exceptionHandler a consumer that handles exceptions if any occur.
 	 */
 	public void send(JsonElement message, Consumer<Exception> exceptionHandler) {
-		if (tcpPort > 0) {
+		send(message, exceptionHandler, receivers);
+	}
+
+	/**
+	 * Sends the given json object to the give client.
+	 * 
+	 * @param message          the message to send. should be
+	 *                         '{"header":"HEADER","message":"MESSAGE"}'
+	 * @param exceptionHandler a consumer that handles exceptions if any occur.
+	 * @param clients          the clients to send the message to.
+	 */
+	public void send(JsonElement message, Consumer<Exception> exceptionHandler, List<UDPTCPAddress> clients) {
+		clients.forEach(client -> send(message, exceptionHandler, client));
+	}
+
+	/**
+	 * Sends the given json object to the give client.
+	 * 
+	 * @param message          the message to send. should be
+	 *                         '{"header":"HEADER","message":"MESSAGE"}'
+	 * @param exceptionHandler a consumer that handles exceptions if any occur.
+	 * @param client           the client to send the message to.
+	 */
+	public void send(JsonElement message, Consumer<Exception> exceptionHandler, UDPTCPAddress client) {
+		if (client.getTcpPort() > 0) {
 			try {
-				Socket tcpSocket = new Socket(address, tcpPort);
+				Socket tcpSocket = new Socket(client.getAddress(), client.getTcpPort());
 				tcpSocket.getOutputStream().write(message.toByteArray());
 				tcpSocket.close();
 				return;
@@ -88,46 +128,20 @@ public class Sender {
 				exceptionHandler.accept(e);
 			}
 		}
-		if (udpPort > 0) {
+		if (client.getUdpPort() > 0) {
 			try {
 				if (packet == null) {
-					packet = new DatagramPacket(new byte[1024], 1024, InetAddress.getByName(address), udpPort);
+					packet = new DatagramPacket(new byte[1024], 1024, InetAddress.getByName(client.getAddress()),
+							client.getUdpPort());
 				}
 				packet.setData(message.toByteArray());
+				packet.setAddress(InetAddress.getByName(client.getAddress()));
+				packet.setPort(client.getUdpPort());
 				udpSocket.send(packet);
 			} catch (Exception e) {
 				exceptionHandler.accept(e);
 			}
 		}
-	}
-
-	/**
-	 * Sets the address to send future notifications to.
-	 * 
-	 * @param address the address to send future notifications to.
-	 */
-	public void setAddress(String address) {
-		this.address = address;
-		packet = null;
-	}
-
-	/**
-	 * Sets the udp port of the client to send future notifications to.
-	 * 
-	 * @param port the port of the client to send future notifications to.
-	 */
-	public void setUdpPort(int port) {
-		this.udpPort = port;
-		packet = null;
-	}
-
-	/**
-	 * Sets the tcp port of the client to send future notifications to.
-	 * 
-	 * @param port the port of the client to send future notifications to.
-	 */
-	public void setTcpPort(int port) {
-		this.tcpPort = port;
 	}
 
 }

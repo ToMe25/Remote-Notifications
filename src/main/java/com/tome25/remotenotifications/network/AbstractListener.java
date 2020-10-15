@@ -1,5 +1,7 @@
 package com.tome25.remotenotifications.network;
 
+import java.net.InetAddress;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.tome25.utils.json.JsonElement;
@@ -14,20 +16,20 @@ import com.tome25.utils.json.JsonElement;
 public abstract class AbstractListener implements Runnable {
 
 	protected final Thread thread;
-	protected final Consumer<JsonElement> handler;
+	protected final BiConsumer<JsonElement, InetAddress> handler;
 	private boolean running = true;
 
 	/**
 	 * Constructs a new AbstractListener with the given action.
 	 * 
 	 * @param threadName     the name to use for the thread running this listener.
-	 * @param receiveHandler the consumer to call when receiving a
-	 *                       {@link JsonElement}.
+	 * @param receivehandler the consumer to give the received {@link JsonElement}s
+	 *                       and the senders {@link INetAddress} to.
 	 */
-	public AbstractListener(String threadName, Consumer<JsonElement> receiveHandler) {
+	public AbstractListener(String threadName, BiConsumer<JsonElement, InetAddress> receivehandler) {
 		thread = new Thread(this, threadName);
 		thread.setDaemon(true);
-		handler = receiveHandler;
+		handler = receivehandler;
 	}
 
 	/**

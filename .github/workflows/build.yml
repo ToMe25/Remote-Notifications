@@ -56,13 +56,13 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: build
-        path: target/Remote-Notifications-*.jar
+        path: target/remote-notifications-*.jar
 
     - name: Move artifacts into repository
       id: artifacts_move
       if: ${{ always() }}
       run: |
-        for f in target/Remote-Notifications*.jar; do fo=${f:7}; cp "$f" $(echo "$fo" | sed -r 's/-[0-9]+\.[0-9]+\.[0-9]+-/-/g; s/-[0-9]+\.[0-9]+\.[0-9]+\././g'); done
+        for f in target/remote-notifications*.jar; do fo=${f:7}; cp "$f" $(echo "$fo" | sed -r 's/-[0-9]+\.[0-9]+\.[0-9]+-/-/g; s/-[0-9]+\.[0-9]+\.[0-9]+\././g; s/remote-notifications/Remote-Notifications/g'); done
 
     - name: Generate changelog
       id: changelog

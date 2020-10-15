@@ -1,6 +1,8 @@
 package com.tome25.remotenotifications.client.config;
 
 import com.tome25.remotenotifications.config.ConfigHandler;
+import com.tome25.remotenotifications.network.UDPTCPAddress;
+import com.tome25.utils.json.JsonArray;
 
 /**
  * The client config handler. This class handles the client config file, reading
@@ -33,6 +35,11 @@ public class ClientConfig extends ConfigHandler {
 	 * the program.
 	 */
 	public static final String CONFIRM_EXIT = "confirm-exit";
+	/**
+	 * The property name for the servers to notify that they should send
+	 * notifications to this client.
+	 */
+	public static final String SERVERS = "servers";
 
 	private boolean confirmExit;
 
@@ -51,6 +58,16 @@ public class ClientConfig extends ConfigHandler {
 				"The port to listen on for notifications that are sent over tcp.", "Set to 0 to disable tcp handling.");
 		getConfig().addConfig("client.cfg", CONFIRM_EXIT, true,
 				"Whether there should be a confirmation window before exiting Remote-Notifications.");
+		getConfig().addConfig("client.cfg", SERVERS, new JsonArray(new UDPTCPAddress("localhost", 3114, 3115).toJson()),
+				"A list of servers to request notifications from.",
+				"The client will try to send notifications over tcp first, and fall back to udp if that fails,",
+				"if both are enabled. To disable one of the protocols set its port to 0.",
+				"The json format used for this list works like this: ",
+				"[{\"addr\": \"SERVER_1_ADDRESS\", \"udp\": SERVER_1_UDP_PORT, \"tcp\": SERVER_1_TCP_PORT},",
+				"{\"addr\": \"SERVER_2_ADDRESS\", \"udp\": SERVER_2_UDP_PORT, \"tcp\": SERVER_2_TCP_PORT\"}]",
+				"Note that you can add as many servers as you want.",
+				"Also json expects Strings(like the address) to be in double quots,",
+				"while it expects numbers(the ports) not to be in any quotes.");
 		getConfig().readConfig();
 		updateConfig();
 	}

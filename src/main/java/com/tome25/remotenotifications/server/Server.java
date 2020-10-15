@@ -1,8 +1,16 @@
 package com.tome25.remotenotifications.server;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.tome25.remotenotifications.network.Receiver;
 import com.tome25.remotenotifications.network.Sender;
+import com.tome25.remotenotifications.network.UDPTCPAddress;
 import com.tome25.remotenotifications.server.config.ServerConfig;
 import com.tome25.remotenotifications.utility.DependencyChecker;
+import com.tome25.utils.json.JsonArray;
+import com.tome25.utils.json.JsonElement;
 
 /**
  * The server main class. This class handles initializing all the server stuff.
@@ -13,7 +21,9 @@ import com.tome25.remotenotifications.utility.DependencyChecker;
 public class Server {
 
 	private Sender sender;
+	private Receiver receiver;
 	private ServerConfig config;
+	private List<UDPTCPAddress> clients = new ArrayList<UDPTCPAddress>();
 
 	/**
 	 * Initializes a new Server.
@@ -25,15 +35,29 @@ public class Server {
 		config = new ServerConfig();
 		config.registerUpdateHandler(cfg -> updateConfig());
 		config.initConfig();
+		try {
+			sender = new Sender(clients);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
-	 * Gets the Sender used by this server.
+	 * Gets the Sender used to send notifications.
 	 * 
-	 * @return the Sender used by this server.
+	 * @return the Sender used to send notifications.
 	 */
 	public Sender getSender() {
 		return sender;
+	}
+
+	/**
+	 * Gets the receiver used to receive notification requests.
+	 * 
+	 * @return the receiver used to receive notification requests.
+	 */
+	public Receiver getReceiver() {
+		return receiver;
 	}
 
 	/**
@@ -49,20 +73,44 @@ public class Server {
 	 * Updates some stuff from the newly changed config values.
 	 */
 	private void updateConfig() {
-		String clientAddress = (String) config.getConfig(ServerConfig.CLIENT_ADDRESS);
-		int udpPort = (int) config.getConfig(ServerConfig.CLIENT_UDP_PORT);
-		int tcpPort = (int) config.getConfig(ServerConfig.CLIENT_TCP_PORT);
-		if (sender == null) {
-			try {
-				sender = new Sender(clientAddress, udpPort, tcpPort);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			sender.setAddress(clientAddress);
-			sender.setUdpPort(udpPort);
-			sender.setTcpPort(tcpPort);
+		JsonArray clientsJson = config.getConfig(ServerConfig.CLIENTS);
+		clients.clear();
+		clientsJson.forEach(client -> clients.add(new UDPTCPAddress((JsonElement) client)));
+		if (receiver != null) {
+			receiver.stop();
 		}
+		receiver = new Receiver(config.getConfig(ServerConfig.UDP_PORT), config.getConfig(ServerConfig.TCP_PORT),
+				(json, addr) -> addClient(
+						new UDPTCPAddress(addr.getHostName(), (int) json.get("udp"), (int) json.get("tcp"))));
+	}
+
+	/**
+	 * Removes all clients from the list of clients this server sends to.
+	 */
+	public void clearClients() {
+		clients.clear();
+		config.setConfig(ServerConfig.CLIENTS, new JsonArray());
+	}
+
+	/**
+	 * Adds the given client to the list of clients to send notifications to.
+	 * 
+	 * @param address the address to add.
+	 */
+	public void addClient(UDPTCPAddress address) {
+		clients.add(address);
+		JsonArray clientsJson = new JsonArray(
+				clients.stream().distinct().map(addr -> addr.toJson()).collect(Collectors.toList()));
+		config.setConfig(ServerConfig.CLIENTS, clientsJson);
+	}
+
+	/**
+	 * Gets a list containing all the clients to send notifications to.
+	 * 
+	 * @return a list containing all the clients to send notifications to.
+	 */
+	public List<UDPTCPAddress> getClients() {
+		return new ArrayList<UDPTCPAddress>(clients);
 	}
 
 }

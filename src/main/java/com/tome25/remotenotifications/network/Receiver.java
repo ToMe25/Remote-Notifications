@@ -1,8 +1,8 @@
 package com.tome25.remotenotifications.network;
 
-import java.util.function.Consumer;
+import java.net.InetAddress;
+import java.util.function.BiConsumer;
 
-import com.tome25.remotenotifications.client.notification.NotificationHandler;
 import com.tome25.utils.json.JsonElement;
 
 /**
@@ -21,10 +21,10 @@ public class Receiver {
 	 * 
 	 * @param udpPort the port to listen on for udp packets. set to 0 to disable.
 	 * @param tcpPort the port to listen on for tcp packets. set to 0 to disable.
+	 * @param handler the consumer to give the received {@link JsonElement}s and the
+	 *                senders {@link INetAddress} to.
 	 */
-	public Receiver(int udpPort, int tcpPort) {
-		Consumer<JsonElement> handler = json -> NotificationHandler.displayMessage(json.getString("header"),
-				json.getString("message"));
+	public Receiver(int udpPort, int tcpPort, BiConsumer<JsonElement, InetAddress> handler) {
 		if (udpPort > 0) {
 			try {
 				udpListener = new UDPListener(udpPort, handler);
@@ -59,7 +59,7 @@ public class Receiver {
 	 * @return this receivers udp port.
 	 */
 	public int getUDPPort() {
-		return udpListener.getPort();
+		return udpListener == null ? 0 : udpListener.getPort();
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class Receiver {
 	 * @return this receivers tcp port.
 	 */
 	public int getTCPPort() {
-		return tcpListener.getPort();
+		return tcpListener == null ? 0 : tcpListener.getPort();
 	}
 
 }

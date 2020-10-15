@@ -7,8 +7,9 @@ import java.text.ParseException;
 
 import org.junit.Test;
 
-import com.tome25.remotenotifications.network.Sender;
 import com.tome25.remotenotifications.network.TCPListener;
+import com.tome25.remotenotifications.network.UDPTCPAddress;
+import com.tome25.remotenotifications.server.Server;
 import com.tome25.utils.json.JsonElement;
 import com.tome25.utils.json.JsonParser;
 
@@ -19,12 +20,14 @@ public class SenderTest {
 
 	@Test
 	public void testSender() throws IOException, ParseException, InterruptedException {
-		Sender sender = new Sender("localhost", 0, 3333);
-		listener = new TCPListener(3333, json -> {
+		Server server = new Server();
+		server.clearClients();
+		server.addClient(new UDPTCPAddress("localhost", 0, 3333));
+		listener = new TCPListener(3333, (json, addr) -> {
 			received = json;
 			listener.stop(false);
 		});
-		sender.send("Header", "Test Message");
+		server.getSender().send("Header", "Test Message");
 		listener.join();
 		assertEquals(JsonParser.parseString("{\"header\":\"Header\",\"message\":\"Test Message\"}"), received);
 	}

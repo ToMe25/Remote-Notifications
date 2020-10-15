@@ -9,6 +9,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,8 +28,11 @@ import javax.swing.border.EtchedBorder;
 
 import com.tome25.remotenotifications.client.notification.Notifications;
 import com.tome25.remotenotifications.client.utility.IconHandler;
+import com.tome25.remotenotifications.client.utility.JsonFormat;
 import com.tome25.remotenotifications.client.utility.PopupManager;
 import com.tome25.remotenotifications.config.ConfigHandler;
+import com.tome25.utils.json.JsonElement;
+import com.tome25.utils.json.JsonParser;
 
 /**
  * A gui to change the client config options.
@@ -43,6 +47,7 @@ public class ConfigWindow {
 	private Map<String, NumberChangeListener> numberListeners = new HashMap<String, NumberChangeListener>();
 	private Map<String, EnumChangeListener> enumListeners = new HashMap<String, EnumChangeListener>();
 	private Map<String, BooleanChangeListener> booleanListeners = new HashMap<String, BooleanChangeListener>();
+	private Map<String, JsonChangeListener> jsonListeners = new HashMap<String, JsonChangeListener>();
 
 	/**
 	 * Creates a new ConfigWindow.
@@ -72,12 +77,14 @@ public class ConfigWindow {
 		JPanel configPanel = new JPanel();
 		configPanel.setPreferredSize(new Dimension(380, 200));
 		configPanel.setLayout(new BoxLayout(configPanel, BoxLayout.PAGE_AXIS));
-		configPanel.add(createEnumSetting("notification-style", Notifications.names(),
-				(String) cfg.getConfig(ClientConfig.NOTIFICATION_STYLE)));
-		configPanel.add(createNumberSetting("notification-time", (int) cfg.getConfig(ClientConfig.NOTIFICATION_TIME)));
-		configPanel.add(createNumberSetting("udp-port", (int) cfg.getConfig(ClientConfig.UDP_PORT)));
-		configPanel.add(createNumberSetting("tcp-port", (int) cfg.getConfig(ClientConfig.TCP_PORT)));
-		configPanel.add(createBooleanSetting("confirm-exit", cfg.confirmExit()));
+		configPanel.add(createEnumSetting(ClientConfig.NOTIFICATION_STYLE, Notifications.names(),
+				cfg.getConfig(ClientConfig.NOTIFICATION_STYLE)));
+		configPanel.add(
+				createNumberSetting(ClientConfig.NOTIFICATION_TIME, cfg.getConfig(ClientConfig.NOTIFICATION_TIME)));
+		configPanel.add(createNumberSetting(ClientConfig.UDP_PORT, cfg.getConfig(ClientConfig.UDP_PORT)));
+		configPanel.add(createNumberSetting(ClientConfig.TCP_PORT, cfg.getConfig(ClientConfig.TCP_PORT)));
+		configPanel.add(createBooleanSetting(ClientConfig.CONFIRM_EXIT, cfg.confirmExit()));
+		configPanel.add(createJsonSetting(ClientConfig.SERVERS, cfg.getConfig(ClientConfig.SERVERS).toString()));
 		configPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
 				BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 		contentPane.add(configPanel, BorderLayout.CENTER);
@@ -101,7 +108,8 @@ public class ConfigWindow {
 	public void update() {
 		numberListeners.forEach((name, listener) -> listener.textField.setValue(cfg.getConfig(name)));
 		enumListeners.forEach((name, listener) -> listener.comboBox.setSelectedItem(cfg.getConfig(name)));
-		booleanListeners.forEach((name, listener) -> listener.checkBox.setSelected((boolean) cfg.getConfig(name)));
+		booleanListeners.forEach((name, listener) -> listener.checkBox.setSelected(cfg.getConfig(name)));
+		jsonListeners.forEach((name, listener) -> listener.textField.setText(cfg.getConfig(name).toString()));
 	}
 
 	/**
@@ -166,6 +174,32 @@ public class ConfigWindow {
 		booleanListeners.put(name, listener);
 		panel.add(label, BorderLayout.LINE_START);
 		panel.add(checkBox, BorderLayout.LINE_END);
+		return panel;
+	}
+
+	/**
+	 * Creates a new settings panel for a json setting.
+	 * 
+	 * @param name  the name of the setting.
+	 * @param value its default value.
+	 * @return the settings panel.
+	 */
+	private JPanel createJsonSetting(String name, String value) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		JLabel label = new JLabel(name);
+		JFormattedTextField textField = new JFormattedTextField(new JsonFormat());
+		try {
+			textField.setValue(JsonParser.parseString(value));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		textField.setColumns(12);
+		JsonChangeListener listener = new JsonChangeListener(name, textField);
+		jsonListeners.put(name, listener);
+		textField.addPropertyChangeListener(listener);
+		panel.add(label, BorderLayout.LINE_START);
+		panel.add(textField, BorderLayout.LINE_END);
 		return panel;
 	}
 
@@ -260,6 +294,29 @@ public class ConfigWindow {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			cfg.setConfig(name, checkBox.isSelected());
+		}
+
+	}
+
+	private class JsonChangeListener implements PropertyChangeListener {
+
+		private final String name;
+		private final JFormattedTextField textField;
+
+		/**
+		 * Creates a new JsonChangeListener.
+		 * 
+		 * @param name      the name of the option to listen.
+		 * @param textField the {@link JFormattedTextField} to listen for changes on.
+		 */
+		private JsonChangeListener(String name, JFormattedTextField textField) {
+			this.name = name;
+			this.textField = textField;
+		}
+
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			cfg.setConfig(name, (JsonElement) textField.getValue());
 		}
 
 	}

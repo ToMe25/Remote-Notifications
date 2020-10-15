@@ -11,18 +11,10 @@ Remote-Notifications can be used in the command line by starting a client with
 
 and sending a notifications with
 
-`java -jar Remote-Notifications.jar -server -header=HEADER -message=MESSAGE -address=ADDRESS`
-.
+`java -jar Remote-Notifications.jar -server -header=HEADER -message=MESSAGE -addresses='[{"addr": "RECEIVER_ADDRESS", "udp": RECEIVER_UDP_PORT, "tcp": RECEIVER_TCP_PORT}]'`
 
-You can also add
 
-`-udpport=PORT`
-
-or
-
-`tcpport=PORT`
-
-to the client command to set the ports he is listening on, or to the server, to set what ports he is sending the data to.
+`-tcp=TCP_PORT` or `-udp=UDP_PORT` can be added to the client start command to set the tcp/udp port to listen for notifications on.
 
 To change config options, you can either change them in the config file in the "Remote-Notifications-Config" directory next to the jar file,
 
@@ -32,6 +24,7 @@ or using the Config Window that can be accessed by selecting the config option i
 If you want to send notifications from inside another application you will also need [ToMe25s-Java-Utilities](https://github.com/ToMe25/ToMe25s-Java-Utilities) as Remote-Notifications is based on that library.
 
 After you have sorted out all the dependency stuff, you just need to create a new instance of `com.tome25.remotenotifications.client.Client` to start a client,
+
 or a new instance of `com.tome25.remotenotifications.server.Server` to start a server.
 Both of them will automatically read their config file, and initialize everything they need.
 
@@ -73,10 +66,13 @@ for the server.
  * udp-port
  * tcp-port
  * confirm-exit
+ * servers
+
 These can also be found as constants in `com.tome25.remotenotifications.client.config.ClientConfig`.
 
 #### Server config properties:
- * client-address
- * client-udp-port
- * client-tcp-port
+ * clients
+ * udp-port
+ * tcp-port
+
 These can also be found as constants in `com.tome25.remotenotifications.server.config.ServerConfig`.

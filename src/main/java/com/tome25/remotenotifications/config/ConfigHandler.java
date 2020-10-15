@@ -37,10 +37,11 @@ public abstract class ConfigHandler {
 	/**
 	 * Gets the config value for the given Name.
 	 * 
+	 * @param <T>    the option type.
 	 * @param option the name of the config option to get.
 	 * @return the config value for the given Name.
 	 */
-	public Object getConfig(String option) {
+	public <T> T getConfig(String option) {
 		return config.getConfig(option);
 	}
 
@@ -53,7 +54,11 @@ public abstract class ConfigHandler {
 	 * @param value  the value to set the option to.
 	 */
 	public <T> void setConfig(String option, T value) {
+		T oldValue = config.getConfig(option);
 		config.setConfig(option, value);
+		if (!oldValue.equals(value)) {
+			updateConfig();
+		}
 	}
 
 	/**
