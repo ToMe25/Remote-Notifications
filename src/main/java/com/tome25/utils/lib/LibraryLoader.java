@@ -10,7 +10,11 @@ import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -32,11 +36,11 @@ public class LibraryLoader {
 
 	private static Instrumentation instrumentation;
 	private static byte[] buffer;
-	private static String mainArgs;
+	private static String[] mainArgs;
 
 	/**
-	 * Initializes a library loader, restarts your jvm if necessary, tries to
-	 * download ToMe25s-Java-Utilites, if that doesn't work it tries to extract it
+	 * Initializes a LibraryLoader, restarts your JVM if necessary, tries to
+	 * download ToMe25s-Java-Utilities, if that doesn't work it tries to extract it
 	 * from this Jar and adds it to the classpath.
 	 * 
 	 * @param args the program arguments.
@@ -46,11 +50,11 @@ public class LibraryLoader {
 	}
 
 	/**
-	 * Initializes a library loader, restarts your jvm if necessary, tries to
-	 * download ToMe25s-Java-Utilites, if that doesn't work it tries to extract it
-	 * from this Jar, adds it to the classpath, and sets the System Outputs to
-	 * TracingMultiPrintStreams printing to the log files and the previous output
-	 * streams.
+	 * Initializes a LibraryLoader, restarts your JVM if necessary, tries to
+	 * download ToMe25s-Java-Utilities, if that doesn't work it tries to extract it
+	 * from this Jar, adds it to the classpath, and sets the system outputs to
+	 * {@link com.tome25.utils.logging.LoggingPrintStream} printing to a logger
+	 * writing to the log files and the previous {@link java.io.OutputStream}s.
 	 * 
 	 * @param args    the program arguments.
 	 * @param logFile the log file for System.out and System.err. set to null to
@@ -61,29 +65,29 @@ public class LibraryLoader {
 	}
 
 	/**
-	 * Initializes a library loader, restarts your jvm if necessary, tries to
-	 * download ToMe25s-Java-Utilites, if that doesn't work it tries to extract it
-	 * from this Jar, adds it to the classpath, and sets the System Outputs to
-	 * TracingMultiPrintStreams printing to the log file and the previous output
-	 * streams.
+	 * Initializes a LibraryLoader, restarts your JVM if necessary, tries to
+	 * download ToMe25s-Java-Utilities, if that doesn't work it tries to extract it
+	 * from this Jar, adds it to the classpath, and sets the system outputs to
+	 * {@link com.tome25.utils.logging.LoggingPrintStream} printing to a logger
+	 * writing to the log files and the previous {@link java.io.OutputStream}s.
 	 * 
 	 * @param args              the program arguments.
 	 * @param logFile           the log file for System.out and System.err. set to
 	 *                          null to disable changing System.out and System.err.
 	 * @param defaultUrlStorage the default contents for the URL storage file that
-	 *                          lists the urls to try and download
-	 *                          ToMe25s-Java-Utilites from.
+	 *                          lists the URLs to try and download
+	 *                          ToMe25s-Java-Utilities from.
 	 */
 	public static void init(String[] args, File logFile, String defaultUrlStorage) {
 		init(args, logFile, logFile, defaultUrlStorage);
 	}
 
 	/**
-	 * Initializes a library loader, restarts your jvm if necessary, tries to
-	 * download ToMe25s-Java-Utilites, if that doesn't work it tries to extract it
-	 * from this Jar, adds it to the classpath, and sets the System Outputs to
-	 * TracingMultiPrintStreams printing to the log files and the previous output
-	 * streams.
+	 * Initializes a LibraryLoader, restarts your JVM if necessary, tries to
+	 * download ToMe25s-Java-Utilities, if that doesn't work it tries to extract it
+	 * from this Jar, adds it to the classpath, and sets the system outputs to
+	 * {@link com.tome25.utils.logging.LoggingPrintStream} printing to a logger
+	 * writing to the log files and the previous {@link java.io.OutputStream}s.
 	 * 
 	 * @param args          the program arguments.
 	 * @param outputLogFile the log file for System.out. set to null to disable
@@ -96,11 +100,11 @@ public class LibraryLoader {
 	}
 
 	/**
-	 * Initializes a library loader, restarts your jvm if necessary, tries to
-	 * download ToMe25s-Java-Utilites, if that doesn't work it tries to extract it
-	 * from this Jar, adds it to the classpath, and sets the System Outputs to
-	 * TracingMultiPrintStreams printing to the log files and the previous output
-	 * streams.
+	 * Initializes a LibraryLoader, restarts your JVM if necessary, tries to
+	 * download ToMe25s-Java-Utilities, if that doesn't work it tries to extract it
+	 * from this Jar, adds it to the classpath, and sets the system outputs to
+	 * {@link com.tome25.utils.logging.LoggingPrintStream} printing to a logger
+	 * writing to the log files and the previous {@link java.io.OutputStream}s.
 	 * 
 	 * @param args              the program arguments.
 	 * @param outputLogFile     the log file for System.out. set to null to disable
@@ -108,19 +112,19 @@ public class LibraryLoader {
 	 * @param errorLogFile      the log file for System.err. set to null to disable
 	 *                          changing System.err.
 	 * @param defaultUrlStorage the default contents for the URL storage file that
-	 *                          lists the urls to try and download
-	 *                          ToMe25s-Java-Utilites from.
+	 *                          lists the URLs to try and download
+	 *                          ToMe25s-Java-Utilities from.
 	 */
 	public static void init(String[] args, File outputLogFile, File errorLogFile, String defaultUrlStorage) {
 		init(args, outputLogFile, errorLogFile, defaultUrlStorage, false);
 	}
 
 	/**
-	 * Initializes a library loader, restarts your jvm if necessary, tries to
-	 * download ToMe25s-Java-Utilites, if that doesn't work it tries to extract it
-	 * from this Jar, adds it to the classpath, and sets the System Outputs to
-	 * TracingMultiPrintStreams printing to the log files and the previous output
-	 * streams.
+	 * Initializes a LibraryLoader, restarts your JVM if necessary, tries to
+	 * download ToMe25s-Java-Utilities, if that doesn't work it tries to extract it
+	 * from this Jar, adds it to the classpath, and sets the system outputs to
+	 * {@link com.tome25.utils.logging.LoggingPrintStream} printing to a logger
+	 * writing to the log files and the previous {@link java.io.OutputStream}s.
 	 * 
 	 * @param args              the program arguments.
 	 * @param outputLogFile     the log file for System.out. set to null to disable
@@ -128,8 +132,8 @@ public class LibraryLoader {
 	 * @param errorLogFile      the log file for System.err. set to null to disable
 	 *                          changing System.err.
 	 * @param defaultUrlStorage the default contents for the URL storage file that
-	 *                          lists the urls to try and download
-	 *                          ToMe25s-Java-Utilites from.
+	 *                          lists the URLs to try and download
+	 *                          ToMe25s-Java-Utilities from.
 	 * @param update            whether to download/extract the file if it already
 	 *                          exists.
 	 */
@@ -138,19 +142,26 @@ public class LibraryLoader {
 		ByteArrayOutputStream buf = new ByteArrayOutputStream();
 		PrintStream pb = new PrintStream(buf);
 		File codeSource = new File(LibraryLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-		if (update || !new File(new File(codeSource.getParent(), "libs"), "ToMe25s-Java-Utilities.jar").exists()) {
+		boolean missing = !new File(new File(codeSource.getParent(), "libs"), "ToMe25s-Java-Utilities.jar").exists();
+		boolean created = false;
+		if (missing || update) {
 			LibraryDownloader downloader = new LibraryDownloader(
 					new File(codeSource.getParent(), "ToMe25s-Java-Utilities-Download-Url.txt"), defaultUrlStorage,
 					true, true);
 			if (downloader.downloadFile()) {
 				pb.format("Successfully downloaded ToMe25s-Java-Utilites from %s.%n",
 						downloader.getDownloadUrl().toString());
-			} else {
-				JarExtractor.extractThis(codeSource);
+				created = missing;
+			} else if (JarExtractor.extractThis(codeSource)) {
+				pb.format("Successfully extracted ToMe25s-Java-Utilites from %s.%n", codeSource.toString());
+				created = missing;
 			}
 		}
 		setArgs(args);
 		addLibsToClasspath();
+		if (created) {
+			restart();
+		}
 		try {
 			com.tome25.utils.logging.LogTracer.traceOutputs(outputLogFile, errorLogFile);// importing this would cause
 																							// it to crash on loading.
@@ -167,12 +178,13 @@ public class LibraryLoader {
 
 	/**
 	 * Creates a new LibraryLoader, it is recommended to do this at the start of
-	 * your program, as this may need to restart to jvm, which is what it needs the
+	 * your program, as this may need to restart to JVM, which is what it needs the
 	 * arguments from your main method for. Part of the Java Agent.
 	 * 
 	 * @param mainArgs the main methods arguments.
 	 * @throws IOException if this program isn't a jar or doesn't exists. And if
-	 *                     somehow creating a JarFile instance fails.
+	 *                     somehow creating a {@link JarFile} instance fails.
+	 * @deprecated use the non java agent library loading instead.
 	 */
 	@Deprecated
 	public LibraryLoader(String[] mainArgs) throws IOException {
@@ -243,10 +255,12 @@ public class LibraryLoader {
 	}
 
 	/**
-	 * The premain method needed for this Agent to work. Part of the Java Agent.
+	 * The premain method needed for this Java Agent to work. Part of the Java
+	 * Agent.
 	 * 
 	 * @param args            some arguments.
 	 * @param instrumentation the instrumentation instance to use.
+	 * @deprecated use the non java agent library loading instead.
 	 */
 	@Deprecated
 	public static void premain(String args, Instrumentation instrumentation) {
@@ -254,11 +268,13 @@ public class LibraryLoader {
 	}
 
 	/**
-	 * converts a String Array to a String. entries are separated with a space.
+	 * Converts a string array to a string. Entries are separated with a space.
 	 * 
 	 * @param array the array to get the string representation of.
 	 * @return a string representation of the given string array.
+	 * @deprecated use {@link java.util.Arrays#toString(Object[])} instead.
 	 */
+	@Deprecated
 	private static String stringArrayToString(String[] array) {
 		String string = "";
 		for (String str : array) {
@@ -275,6 +291,7 @@ public class LibraryLoader {
 	 * 
 	 * @param library the jar archive that should get added to the classpath.
 	 * @throws IOException if an I/O error has occurred.
+	 * @deprecated use the non java agent library loading instead.
 	 */
 	@Deprecated
 	public void addJarToClasspath(String library) throws IOException {
@@ -286,6 +303,7 @@ public class LibraryLoader {
 	 * 
 	 * @param library the jar archive that should get added to the classpath.
 	 * @throws IOException if an I/O error has occurred.
+	 * @deprecated use the non java agent library loading instead.
 	 */
 	@Deprecated
 	public void addJarToClasspath(File library) throws IOException {
@@ -296,6 +314,7 @@ public class LibraryLoader {
 	 * Adds the given library jar to the classpath. Part of the Java Agent.
 	 * 
 	 * @param library the jar archive that should get added to the classpath.
+	 * @deprecated use the non java agent library loading instead.
 	 */
 	@Deprecated
 	public void addJarToClasspath(JarFile library) {
@@ -308,6 +327,7 @@ public class LibraryLoader {
 	 * 
 	 * @param libDir the directory containing the libraries.
 	 * @throws IOException if an I/O error has occurred.
+	 * @deprecated use the non java agent library loading instead.
 	 */
 	@Deprecated
 	public void addJarsToClasspath(String libDir) throws IOException {
@@ -319,6 +339,7 @@ public class LibraryLoader {
 	 * 
 	 * @param libDir the directory containing the libraries.
 	 * @throws IOException if an I/O error has occurred.
+	 * @deprecated use the non java agent library loading instead.
 	 */
 	@Deprecated
 	public void addJarsToClasspath(File libDir) throws IOException {
@@ -334,12 +355,12 @@ public class LibraryLoader {
 
 	/**
 	 * Adds ToMe25s-Java-Utilities to the classpath of it is in the libs directory
-	 * next to this jar.
+	 * next to this jar. Automatically restarts this software if necessary.
 	 */
 	public static void addThisToClasspath() {
 		File library = new File("libs", "ToMe25s-Java-Utilities.jar");
 		try {
-			addToClasspath(library);
+			addToClasspath(library, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -366,14 +387,32 @@ public class LibraryLoader {
 	/**
 	 * Adds everything inside the libs folder to the classpath. Sadly just adding a
 	 * "*" file in the directory doesn't work in the MANIFEST.MF attribute, so this
-	 * looks for all .jar files in the libs direcotry.
+	 * looks for all .jar files that don't have "sources" or "javadoc" in their name
+	 * in the libs directory. Automatically restarts this software if necessary.
 	 */
 	public static void addLibsToClasspath() {
+		addLibsToClasspath(name -> name.endsWith(".jar") && !name.contains("sources") && !name.contains("javadoc"));
+	}
+
+	/**
+	 * Adds everything inside the libs folder to the classpath. Sadly just adding a
+	 * "*" file in the directory doesn't work in the MANIFEST.MF attribute, so this
+	 * looks for all files matching the libraryChecker predicate. Automatically
+	 * restarts this software if necessary.
+	 * 
+	 * @param libraryChecker the predicate that checks what files to add to the
+	 *                       classpath.
+	 */
+	public static void addLibsToClasspath(Predicate<String> libraryChecker) {
 		try {
+			boolean restart = false;
 			for (String file : new File("libs").list()) {
-				if (file.endsWith(".jar")) {
-					addToClasspath(new File("libs", file));
+				if (libraryChecker.test(file)) {
+					restart = addToClasspath(new File("libs", file)) || restart;
 				}
+			}
+			if (restart) {
+				restart();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -381,32 +420,35 @@ public class LibraryLoader {
 	}
 
 	/**
-	 * Adds the given String to the classpath. Requires setArgs to be run first!
+	 * Adds the given string to the classpath.
 	 * 
 	 * @param path the path to add.
+	 * @return whether a restart is necessary.
 	 * @throws IOException if something goes wrong.
 	 */
-	public static void addToClasspath(Path path) throws IOException {
-		addToClasspath(path.toString());
+	public static boolean addToClasspath(Path path) throws IOException {
+		return addToClasspath(path.toString());
 	}
 
 	/**
-	 * Adds the given String to the classpath. Requires setArgs to be run first!
+	 * Adds the given string to the classpath.
 	 * 
 	 * @param path the path to add.
+	 * @return whether a restart is necessary.
 	 * @throws IOException if something goes wrong.
 	 */
-	public static void addToClasspath(File path) throws IOException {
-		addToClasspath(path.getPath());
+	public static boolean addToClasspath(File path) throws IOException {
+		return addToClasspath(path.getPath());
 	}
 
 	/**
-	 * Adds the given String to the classpath. Requires setArgs to be run first!
+	 * Adds the given string to the classpath.
 	 * 
 	 * @param path the path to add.
+	 * @return whether a restart is necessary.
 	 * @throws IOException if something goes wrong.
 	 */
-	public static void addToClasspath(String path) throws IOException {
+	public static boolean addToClasspath(String path) throws IOException {
 		File file = new File(LibraryLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 		if (!file.exists()) {
 			throw new FileNotFoundException(
@@ -467,44 +509,81 @@ public class LibraryLoader {
 			jar.close();
 			fiout.close();
 			tempFile.delete();
-			ProcessBuilder pb = new ProcessBuilder("java", "-jar", file.getAbsolutePath(), stringArrayToString(
-					ManagementFactory.getRuntimeMXBean().getInputArguments().toArray(new String[0])), mainArgs);
-			pb.inheritIO();
-			pb.start();
-			System.exit(0);
+			return true;
+		} else {
+			jar.close();
+			return false;
 		}
 	}
 
 	/**
-	 * Removes the given String from the classpath. Requires setArgs to be run
-	 * first!
+	 * Adds the given string to the classpath.
 	 * 
-	 * @param path the path to remove.
+	 * @param path    the path to add.
+	 * @param restart whether to automatically restart this JVM if necessary.
+	 *                Requires setArgs to be run first!
 	 * @throws IOException if something goes wrong.
 	 */
-	public static void removeToClasspath(Path path) throws IOException {
-		addToClasspath(path.toString());
+	public static void addToClasspath(Path path, boolean restart) throws IOException {
+		addToClasspath(path.toString(), restart);
 	}
 
 	/**
-	 * Removes the given String from the classpath. Requires setArgs to be run
-	 * first!
+	 * Adds the given string to the classpath.
 	 * 
-	 * @param path the path to remove.
+	 * @param path    the path to add.
+	 * @param restart whether to automatically restart this JVM if necessary.
+	 *                Requires setArgs to be run first!
 	 * @throws IOException if something goes wrong.
 	 */
-	public static void removeToClasspath(File path) throws IOException {
-		addToClasspath(path.getPath());
+	public static void addToClasspath(File path, boolean restart) throws IOException {
+		addToClasspath(path.getPath(), restart);
 	}
 
 	/**
-	 * Removes the given String from the classpath. Requires setArgs to be run
-	 * first!
+	 * Adds the given string to the classpath.
 	 * 
-	 * @param path the path to remove.
+	 * @param path    the path to add.
+	 * @param restart whether to automatically restart this JVM if necessary.
+	 *                Requires setArgs to be run first!
 	 * @throws IOException if something goes wrong.
 	 */
-	public static void removeToClasspath(String path) throws IOException {
+	public static void addToClasspath(String path, boolean restart) throws IOException {
+		if (addToClasspath(path) && restart) {
+			restart();
+		}
+	}
+
+	/**
+	 * Removes the given string from the classpath.
+	 * 
+	 * @param path the path to remove.
+	 * @return whether a restart is necessary.
+	 * @throws IOException if something goes wrong.
+	 */
+	public static boolean removeFromClasspath(Path path) throws IOException {
+		return removeFromClasspath(path.toString());
+	}
+
+	/**
+	 * Removes the given string from the classpath.
+	 * 
+	 * @param path the path to remove.
+	 * @return whether a restart is necessary.
+	 * @throws IOException if something goes wrong.
+	 */
+	public static boolean removeFromClasspath(File path) throws IOException {
+		return removeFromClasspath(path.getPath());
+	}
+
+	/**
+	 * Removes the given string from the classpath.
+	 * 
+	 * @param path the path to remove.
+	 * @return whether a restart is necessary.
+	 * @throws IOException if something goes wrong.
+	 */
+	public static boolean removeFromClasspath(String path) throws IOException {
 		File file = new File(LibraryLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 		if (!file.exists()) {
 			throw new FileNotFoundException(
@@ -568,15 +647,49 @@ public class LibraryLoader {
 			jar.close();
 			fiout.close();
 			tempFile.delete();
-			ProcessBuilder pb = new ProcessBuilder("java", "-jar", file.getAbsolutePath(), stringArrayToString(
-					ManagementFactory.getRuntimeMXBean().getInputArguments().toArray(new String[0])), mainArgs);
-			pb.inheritIO();
-			pb.start();
-			System.exit(0);
-		} else
-
-		{
+			return true;
+		} else {
 			System.err.format("Couldn't remove %s from the classpath, as it wasn't there.%n", path);
+			jar.close();
+			return false;
+		}
+	}
+
+	/**
+	 * Removes the given string from the classpath.
+	 * 
+	 * @param path    the path to remove.
+	 * @param restart whether to automatically restart this JVM if necessary.
+	 *                Requires setArgs to be run first!
+	 * @throws IOException if something goes wrong.
+	 */
+	public static void removeFromClasspath(Path path, boolean restart) throws IOException {
+		removeFromClasspath(path.toString(), restart);
+	}
+
+	/**
+	 * Removes the given string from the classpath.
+	 * 
+	 * @param path    the path to remove.
+	 * @param restart whether to automatically restart this JVM if necessary.
+	 *                Requires setArgs to be run first!
+	 * @throws IOException if something goes wrong.
+	 */
+	public static void removeFromClasspath(File path, boolean restart) throws IOException {
+		removeFromClasspath(path.getPath(), restart);
+	}
+
+	/**
+	 * Removes the given string from the classpath.
+	 * 
+	 * @param path    the path to remove.
+	 * @param restart whether to automatically restart this JVM if necessary.
+	 *                Requires setArgs to be run first!
+	 * @throws IOException if something goes wrong.
+	 */
+	public static void removeFromClasspath(String path, boolean restart) throws IOException {
+		if (removeFromClasspath(path) && restart) {
+			restart();
 		}
 	}
 
@@ -586,11 +699,11 @@ public class LibraryLoader {
 	 * @param args the arguments of the main method.
 	 */
 	public static void setArgs(String[] args) {
-		mainArgs = stringArrayToString(args);
+		mainArgs = args;
 	}
 
 	/**
-	 * if init got used, this is the way to get its output buffer.
+	 * If init got used, this is the way to get its output buffer.
 	 * 
 	 * @return the output buffer used in init.
 	 */
@@ -602,9 +715,41 @@ public class LibraryLoader {
 	 * Returns the previously set main method arguments.
 	 * 
 	 * @return the previously set main method arguments.
+	 * @deprecated use {@link #getMainArgsArray} instead.
 	 */
+	@Deprecated
 	public static String getMainArgs() {
+		return stringArrayToString(mainArgs);
+	}
+
+	/**
+	 * Returns the previously set main method arguments.
+	 * 
+	 * @return the previously set main method arguments.
+	 */
+	public static String[] getMainArgsArray() {
 		return mainArgs;
+	}
+
+	/**
+	 * Restarts this JVM. Requires setArgs to be run first!
+	 */
+	public static void restart() {
+		File codeSource = new File(LibraryLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+		List<String> command = new ArrayList<String>();
+		command.add("java");
+		command.add("-jar");
+		command.add(codeSource.getAbsolutePath());
+		command.addAll(ManagementFactory.getRuntimeMXBean().getInputArguments());
+		command.addAll(Arrays.asList(getMainArgsArray()));
+		ProcessBuilder pb = new ProcessBuilder(command);
+		pb.inheritIO();
+		try {
+			pb.start();
+			System.exit(0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -35,22 +35,28 @@ public class LibraryDownloader {
 			"application/octet-stream", "application/download", "application/force-download" };
 	private static final Predicate<String> JAR_CONTENT_TYPE_CHECKER = (s) -> Arrays.asList(JAR_CONTENT_TYPES)
 			.contains(s);
+	/**
+	 * The default content of the file that defines where to download this library.
+	 */
 	protected static final String DEFAULT_TOME25S_JAVA_UTILITIES_URL_STORAGE = String
-			.format("# The URL'S to try and download ToMe25's-Java-Utilites from.%n"
-					+ "# separate entries with a ',', they will be tried from start to end.%n"
+			.format("# The URL(s) to try and download ToMe25's-Java-Utilities from.%n"
+					+ "# Entries are separated with a ',', they will be tried from start to end.%n"
 					+ "https://github.com/ToMe25/ToMe25s-Java-Utilities/raw/master/ToMe25s-Java-Utilities.jar%n");
 
 	private List<URL> urls;
 	private File target;
+	/**
+	 * The predicate checking whether a content type is valid.
+	 */
 	private Predicate<String> typeCheck;
 	private boolean override;
 	/**
-	 * whether the target file should get set to executable after the download
+	 * Whether the target file should get set to executable after the download
 	 * finished.
 	 */
 	private boolean executable;
 	/**
-	 * whether target is a directory and the file should be put in it, or the file
+	 * Whether target is a directory and the file should be put in it, or the file
 	 * where the download should be saved.
 	 */
 	private boolean targetDir;
@@ -59,7 +65,7 @@ public class LibraryDownloader {
 	private URL downloadedFrom;
 
 	/**
-	 * Creates a new Library Downloader that reads all URLs from urlStorage, and
+	 * Creates a new LibraryDownloader that reads all URLs from urlStorage, and
 	 * tries them until one is valid, as long as they are separated by a ',' or a
 	 * ';'. This ignores lines starting with a '#'. If the file doesn't exists it
 	 * creates it with defaultUrlStorage as its content. If defaultUrlStorage is
@@ -82,7 +88,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * Creates a new Library Downloader that reads all URLs from urlStorage, and
+	 * Creates a new LibraryDownloader that reads all URLs from urlStorage, and
 	 * tries them until one is valid, as long as they are separated by a ',' or a
 	 * ';'. This ignores lines starting with a '#'. If the file doesn't exists it
 	 * creates it with defaultUrlStorage as its content. If defaultUrlStorage is
@@ -102,7 +108,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * Creates a new Library Downloader that reads all URLs from urlStorage, and
+	 * Creates a new LibraryDownloader that reads all URLs from urlStorage, and
 	 * tries them until one is valid, as long as they are separated by a ',' or a
 	 * ';'. This ignores lines starting with a '#'. If the file doesn't exists it
 	 * creates it with defaultUrlStorage as its content. If defaultUrlStorage is
@@ -130,7 +136,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * Creates a new Library Downloader that reads all URLs from urlStorage, and
+	 * Creates a new LibraryDownloader that reads all URLs from urlStorage, and
 	 * tries them until one is valid, as long as they are separated by a ',' or a
 	 * ';'. This ignores lines starting with a '#'. If the file doesn't exists it
 	 * creates it with defaultUrlStorage as its content. If defaultUrlStorage is
@@ -155,7 +161,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * Creates a new Library Downloader downloading a jar file from a single URL,
+	 * Creates a new LibraryDownloader downloading a jar file from a single URL,
 	 * this will download the file into a directory named libs in the same directory
 	 * where the file containing this class is, and give it the name of the file on
 	 * from the URL.
@@ -174,7 +180,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * Creates a new Library Downloader downloading a jar file from a single URL,
+	 * Creates a new LibraryDownloader downloading a jar file from a single URL,
 	 * this will download the file into a directory named libs in the same directory
 	 * where the file containing this class is, and give it the name of the file on
 	 * from the URL.
@@ -192,7 +198,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * Creates a new Library Downloader downloading a jar file from a single URL.
+	 * Creates a new LibraryDownloader downloading a jar file from a single URL.
 	 * 
 	 * @param url            the URL to download a file from.
 	 * @param target         the target location for the File. If it is a directory
@@ -208,7 +214,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * Creates a new Library Downloader downloading from a single URL if the content
+	 * Creates a new LibraryDownloader downloading from a single URL if the content
 	 * type of that web site is accepted by contentTypeCheck.
 	 * 
 	 * @param url              the URL to download a file from.
@@ -229,7 +235,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * Creates a new Library Downloader downloading a Jar file from the first valid
+	 * Creates a new LibraryDownloader downloading a Jar file from the first valid
 	 * of a list of URLs, this will download the file into a directory named libs in
 	 * the same directory where the file containing this class is, and give it the
 	 * name of the file on from the URL.
@@ -248,8 +254,8 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * Creates a new Library Downloader downloading from the first url of a list
-	 * that is accepted by contentTypeCheck and responds without errors, this will
+	 * Creates a new LibraryDownloader downloading from the first URL of a list that
+	 * is accepted by contentTypeCheck and responds without errors, this will
 	 * download the file into a directory named libs in the same directory where the
 	 * file containing this class is, and give it the name of the file on from the
 	 * URL.
@@ -267,7 +273,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * Creates a new Library Downloader downloading a Jar file from the first valid
+	 * Creates a new LibraryDownloader downloading a Jar file from the first valid
 	 * of a list of URLs.
 	 * 
 	 * Valid content types are application/jar, application/java-archive,
@@ -288,8 +294,8 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * Creates a new Library Downloader downloading from the first url of a list
-	 * that is accepted by contentTypeCheck and responds without errors.
+	 * Creates a new LibraryDownloader downloading from the first URL of a list that
+	 * is accepted by contentTypeCheck and responds without errors.
 	 * 
 	 * @param urls             the List of URLs to download a file from.
 	 * @param target           the target location for the File. If it is a
@@ -321,7 +327,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * downloads the file from the first working url from the urls set in the
+	 * Downloads the file from the first working URL from the URLs set in the
 	 * constructor.
 	 * 
 	 * @return whether the download was successful.
@@ -331,7 +337,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * downloads the file from the first working url from the urls set in the
+	 * Downloads the file from the first working URL from the URLs set in the
 	 * constructor.
 	 * 
 	 * @param exceptionHandler a consumer that handles exceptions if any occur.
@@ -351,7 +357,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * downloads the file from the given url.
+	 * Downloads the file from the given URL.
 	 * 
 	 * @param url the file to download.
 	 * @return whether the download was successful.
@@ -379,7 +385,7 @@ public class LibraryDownloader {
 				((HttpURLConnection) connection).setInstanceFollowRedirects(false);
 			}
 		}
-		if (typeCheck.test(connection.getContentType())) {
+		if (typeCheck.test(String.valueOf(connection.getContentType()))) {
 			if (targetDir) {
 				if (url.getFile().contains("?")) {
 					target = new File(target,
@@ -426,7 +432,7 @@ public class LibraryDownloader {
 	 * Downloads ToMe25s-Java-Utilities from the first valid URL in the file
 	 * ToMe25s-Java-Utilities-Download-Url.txt.
 	 * 
-	 * The default for this file is the github download URL for
+	 * The default for this file is the GitHub download URL for
 	 * ToMe25s-Java-Utilities.
 	 * 
 	 * @return whether the download was successful.
@@ -468,13 +474,15 @@ public class LibraryDownloader {
 	 * @return whether the download was successful.
 	 */
 	public static boolean downloadThis(String defaultUrls, Consumer<Exception> exceptionHandler) {
-		LibraryDownloader downloader = new LibraryDownloader(new File("ToMe25s-Java-Utilities-Download-Url.txt"),
+		LibraryDownloader downloader = new LibraryDownloader(
+				new File(new File(LibraryDownloader.class.getProtectionDomain().getCodeSource().getLocation().getPath())
+						.getParent(), "ToMe25s-Java-Utilities-Download-Url.txt"),
 				defaultUrls, true, true);
 		return downloader.downloadFile();
 	}
 
 	/**
-	 * returns the size of the file to download in bytes.
+	 * Returns the size of the file to download in bytes.
 	 * 
 	 * @return the size of the file to download in bytes.
 	 */
@@ -483,7 +491,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * returns the amount of bytes that are already downloaded.
+	 * Returns the amount of bytes that are already downloaded.
 	 * 
 	 * @return the amount of bytes that are already downloaded.
 	 */
@@ -492,7 +500,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * returns the percentage of the file that is already downloaded.
+	 * Returns the percentage of the file that is already downloaded.
 	 * 
 	 * @return the percentage of the file that is already downloaded.
 	 */
@@ -501,7 +509,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * returns the URL that got used for the download, after all redirects.
+	 * Returns the URL that got used for the download, after all redirects.
 	 * 
 	 * @return the URL that got used for the download.
 	 */
@@ -510,7 +518,7 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * creates a new ArrayList and adds all the given objects to it.
+	 * Creates a new {@link ArrayList} and adds all the given objects to it.
 	 * 
 	 * @param <T>     the type of objects and list.
 	 * @param objects the objects to put into a list.
@@ -526,14 +534,14 @@ public class LibraryDownloader {
 	}
 
 	/**
-	 * reads all URLs from the given file, as long as they are separated by a ',' or
+	 * Reads all URLs from the given file, as long as they are separated by a ',' or
 	 * a ';'. This ignores lines starting with a '#'. If the file doesn't exists it
 	 * creates it with defaultUrlStorage as its content. If defaultUrlStorage is
 	 * null or empty it wont create a file, and will return an empty list.
 	 * 
 	 * @param urlStorage        the file to read the URLs from.
 	 * @param defaultUrlStorage the default content for urlStorage.
-	 * @return the urls listed in the url storage file.
+	 * @return the URLs listed in the URL storage file.
 	 */
 	private static List<URL> readUrlStorage(File urlStorage, String defaultUrlStorage) {
 		List<URL> urls = new ArrayList<URL>();
