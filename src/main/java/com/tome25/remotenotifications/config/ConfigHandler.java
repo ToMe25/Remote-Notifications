@@ -22,11 +22,12 @@ public abstract class ConfigHandler {
 
 	/**
 	 * Creates a new ConfigHandler.
+	 * 
+	 * @param rootDir the directory in which to create the config directory storing
+	 *                all the config files for this ConfigHandler.
 	 */
-	public ConfigHandler() {
-		File configDir = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
-		configDir = new File(configDir.getParent(), "Remote-Notifications-Config");
-		config = new Config(false, configDir, true, file -> updateConfig());
+	public ConfigHandler(File rootDir) {
+		config = new Config(false, new File(rootDir, "Remote-Notifications-Config"), true, file -> updateConfig());
 	}
 
 	/**
@@ -53,7 +54,7 @@ public abstract class ConfigHandler {
 	 * @param option the option to set.
 	 * @param value  the value to set the option to.
 	 */
-	public <T> void setConfig(String option, T value) {
+	public synchronized <T> void setConfig(String option, T value) {
 		T oldValue = config.getConfig(option);
 		config.setConfig(option, value);
 		if (!oldValue.equals(value)) {
@@ -85,6 +86,13 @@ public abstract class ConfigHandler {
 	 */
 	protected Config getConfig() {
 		return config;
+	}
+
+	/**
+	 * Deletes all the config files.
+	 */
+	public void deleteConfig() {
+		config.delete();
 	}
 
 }

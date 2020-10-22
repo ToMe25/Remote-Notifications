@@ -4,13 +4,14 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.tome25.remotenotifications.client.Client;
-import com.tome25.remotenotifications.client.config.ClientConfig;
 import com.tome25.remotenotifications.network.UDPTCPAddress;
 import com.tome25.remotenotifications.server.Server;
 import com.tome25.remotenotifications.server.config.ServerConfig;
 import com.tome25.remotenotifications.utility.ArgumentParser;
+import com.tome25.remotenotifications.utility.DependencyChecker;
 import com.tome25.remotenotifications.utility.VersionChecker;
 import com.tome25.utils.json.JsonArray;
 import com.tome25.utils.json.JsonElement;
@@ -29,6 +30,7 @@ public class RemoteNotifications {
 
 	public static Client client;
 	public static Server server;
+	public static Logger logger;
 
 	/**
 	 * This programs main method.
@@ -40,15 +42,18 @@ public class RemoteNotifications {
 			LibraryDownloader.downloadThis();
 			LibraryLoader.setArgs(args);
 			LibraryLoader.addLibsToClasspath();
-			com.tome25.utils.logging.LogTracer.traceOutputs(new File("Remote-Notifications.log"));// importing this
-																									// would cause it to
-																									// crash on loading.
+			// importing LogTracer would cause it to crash on loading.
+			com.tome25.utils.logging.LogTracer.traceOutputs(new File("Remote-Notifications.log"));
+			logger = com.tome25.utils.logging.LogTracer.getLogger("Remote-Notifications");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		if (!DependencyChecker.checkDependencies()) {
+			return;
+		}
 		Map<String, String> arguments = ArgumentParser.parse(args);
 		if (arguments.containsKey("help") && arguments.get("help").equalsIgnoreCase("true")) {
-			com.tome25.utils.logging.LogTracer.resetOut();// importing this would cause it to crash on loading.
+			com.tome25.utils.logging.LogTracer.resetOut();// importing LogTracer would cause it to crash on loading.
 			printHelp();
 		} else if (arguments.containsKey("server") && arguments.get("server").equalsIgnoreCase("true")) {
 			server = new Server();
@@ -73,24 +78,26 @@ public class RemoteNotifications {
 			if (arguments.containsKey("header") && arguments.containsKey("message")) {
 				try {
 					server.getSender().send(arguments.get("header"), arguments.get("message"));
-					System.out.format("Sent a notification with header \"%s\" and message \"%s\".%n",
-							arguments.get("header"), arguments.get("message"));
+					logger.info(String.format("Sent a notification with header \"%s\" and message \"%s\".%n",
+							arguments.get("header"), arguments.get("message")));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		} else if (arguments.containsKey("version") && arguments.get("version").equalsIgnoreCase("true")) {
-			com.tome25.utils.logging.LogTracer.resetOut();// importing this would cause it to crash on loading.
+			com.tome25.utils.logging.LogTracer.resetOut();// importing LogTracer would cause it to crash on loading.
 			System.out.println("Remote-Notifications version info");
 			printVersionInfo();
 		} else {
-			client = new Client();
+			int udpPort = -1;
 			if (arguments.containsKey("udpport")) {
-				client.getConfig().setConfig(ClientConfig.UDP_PORT, Integer.parseInt(arguments.get("udpport")));
+				udpPort = Integer.parseInt(arguments.get("udpport"));
 			}
+			int tcpPort = -1;
 			if (arguments.containsKey("tcpport")) {
-				client.getConfig().setConfig(ClientConfig.TCP_PORT, Integer.parseInt(arguments.get("tcpport")));
+				tcpPort = Integer.parseInt(arguments.get("tcpport"));
 			}
+			client = new Client(udpPort, tcpPort, arguments.containsKey("dummy"));
 			if (arguments.containsKey("addresses")) {
 				JsonArray serversJson = null;
 				try {
@@ -145,6 +152,8 @@ public class RemoteNotifications {
 				String.format("The port to listen on for tcp connections.%nSet to 0 to disable tcp.%n"
 						+ "Server default is 3115, Client default is 3113."));
 		optionsHelp.put("version", "Prints version info and stops.");
+		optionsHelp.put("dummy",
+				"Sets the output style to the dummy style printing the notifications to the log, rather then showing them.");
 		Map<String, String> optionsHelp1 = new LinkedHashMap<String, String>();
 		final int[] length = new int[] { 0 };
 		optionsHelp.keySet().forEach(key -> {

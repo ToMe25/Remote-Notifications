@@ -27,7 +27,7 @@ public class UDPListener extends AbstractListener {
 	 * 
 	 * @param port    the port to listen on.
 	 * @param receiveHandler the consumer to give the received {@link JsonElement}s and the
-	 *                senders {@link INetAddress} to.
+	 *                senders {@link InetAddress} to.
 	 * @throws SocketException if initializing the {@link DatagramSocket} fails.
 	 */
 	public UDPListener(int port, BiConsumer<JsonElement, InetAddress> receiveHandler) throws SocketException {

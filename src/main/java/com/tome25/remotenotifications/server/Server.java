@@ -1,5 +1,6 @@
 package com.tome25.remotenotifications.server;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,7 +9,6 @@ import com.tome25.remotenotifications.network.Receiver;
 import com.tome25.remotenotifications.network.Sender;
 import com.tome25.remotenotifications.network.UDPTCPAddress;
 import com.tome25.remotenotifications.server.config.ServerConfig;
-import com.tome25.remotenotifications.utility.DependencyChecker;
 import com.tome25.utils.json.JsonArray;
 import com.tome25.utils.json.JsonElement;
 
@@ -29,10 +29,16 @@ public class Server {
 	 * Initializes a new Server.
 	 */
 	public Server() {
-		if (!DependencyChecker.checkDependencies()) {
-			return;
-		}
-		config = new ServerConfig();
+		this(new File(Server.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile());
+	}
+
+	/**
+	 * Initializes a new Server.
+	 * 
+	 * @param rootDir the directory to put the config directory in.
+	 */
+	public Server(File rootDir) {
+		config = new ServerConfig(rootDir);
 		config.registerUpdateHandler(cfg -> updateConfig());
 		config.initConfig();
 		try {
@@ -76,12 +82,14 @@ public class Server {
 		JsonArray clientsJson = config.getConfig(ServerConfig.CLIENTS);
 		clients.clear();
 		clientsJson.forEach(client -> clients.add(new UDPTCPAddress((JsonElement) client)));
-		if (receiver != null) {
-			receiver.stop();
+		synchronized (this) {
+			if (receiver != null) {
+				receiver.stop();
+			}
+			receiver = new Receiver(config.getConfig(ServerConfig.UDP_PORT), config.getConfig(ServerConfig.TCP_PORT),
+					(json, addr) -> addClient(
+							new UDPTCPAddress(addr.getHostName(), (int) json.get("udp"), (int) json.get("tcp"))));
 		}
-		receiver = new Receiver(config.getConfig(ServerConfig.UDP_PORT), config.getConfig(ServerConfig.TCP_PORT),
-				(json, addr) -> addClient(
-						new UDPTCPAddress(addr.getHostName(), (int) json.get("udp"), (int) json.get("tcp"))));
 	}
 
 	/**

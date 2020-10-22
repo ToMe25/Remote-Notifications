@@ -16,21 +16,22 @@ import java.util.Map;
  */
 public class ArgumentParser {
 
-	private static List<String> args = Arrays
-			.asList(new String[] { "help", "server", "header", "message", "addresses", "udpport", "tcpport", "version" });
+	private static List<String> args = Arrays.asList(new String[] { "help", "server", "header", "message", "addresses",
+			"udpport", "tcpport", "version", "dummy" });
 	public static final Map<String, List<String>> ARG_TO_ALIASSES;
 	public static final Map<String, String> ALIAS_TO_ARG;
 
 	static {
 		ARG_TO_ALIASSES = new HashMap<String, List<String>>();
-		ARG_TO_ALIASSES.put("help", Arrays.asList(new String[] { "info", "i" }));
-		ARG_TO_ALIASSES.put("header", Arrays.asList(new String[] { "h" }));
-		ARG_TO_ALIASSES.put("server", Arrays.asList(new String[] { "s" }));
-		ARG_TO_ALIASSES.put("message", Arrays.asList(new String[] { "m" }));
-		ARG_TO_ALIASSES.put("addresses", Arrays.asList(new String[] { "addr", "a" }));
-		ARG_TO_ALIASSES.put("udpport", Arrays.asList(new String[] { "udp", "u" }));
-		ARG_TO_ALIASSES.put("tcpport", Arrays.asList(new String[] { "tcp", "t" }));
-		ARG_TO_ALIASSES.put("version", Arrays.asList(new String[] { "v" }));
+		ARG_TO_ALIASSES.put("help", Arrays.asList("info", "i"));
+		ARG_TO_ALIASSES.put("header", Arrays.asList("h"));
+		ARG_TO_ALIASSES.put("server", Arrays.asList("s"));
+		ARG_TO_ALIASSES.put("message", Arrays.asList("m"));
+		ARG_TO_ALIASSES.put("addresses", Arrays.asList("addr", "a"));
+		ARG_TO_ALIASSES.put("udpport", Arrays.asList("udp", "u"));
+		ARG_TO_ALIASSES.put("tcpport", Arrays.asList("tcp", "t"));
+		ARG_TO_ALIASSES.put("version", Arrays.asList("v"));
+		ARG_TO_ALIASSES.put("dummy", Arrays.asList("d"));
 		ALIAS_TO_ARG = new HashMap<String, String>();
 		initAliasToArg();
 	}

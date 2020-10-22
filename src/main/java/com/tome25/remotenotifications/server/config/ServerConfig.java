@@ -1,5 +1,7 @@
 package com.tome25.remotenotifications.server.config;
 
+import java.io.File;
+
 import com.tome25.remotenotifications.config.ConfigHandler;
 import com.tome25.remotenotifications.network.UDPTCPAddress;
 import com.tome25.utils.json.JsonArray;
@@ -26,6 +28,16 @@ public class ServerConfig extends ConfigHandler {
 	 * The property name for the tcp port the server listens to.
 	 */
 	public static final String TCP_PORT = "tcp-port";
+
+	/**
+	 * Creates a new server config handler.
+	 * 
+	 * @param rootDir the directory in which to create the config directory storing
+	 *                all the config files for this config handler.
+	 */
+	public ServerConfig(File rootDir) {
+		super(rootDir);
+	}
 
 	@Override
 	public void initConfig() {

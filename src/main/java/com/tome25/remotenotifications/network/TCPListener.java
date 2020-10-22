@@ -28,7 +28,7 @@ public class TCPListener extends AbstractListener {
 	 * 
 	 * @param port           the port to listen on.
 	 * @param receiveHandler the consumer to give the received {@link JsonElement}s
-	 *                       and the senders {@link INetAddress} to.
+	 *                       and the senders {@link InetAddress} to.
 	 * @throws IOException if initializing the {@link ServerSocket} fails.
 	 */
 	public TCPListener(int port, BiConsumer<JsonElement, InetAddress> receiveHandler) throws IOException {

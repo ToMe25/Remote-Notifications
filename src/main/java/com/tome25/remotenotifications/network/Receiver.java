@@ -22,7 +22,7 @@ public class Receiver {
 	 * @param udpPort the port to listen on for udp packets. set to 0 to disable.
 	 * @param tcpPort the port to listen on for tcp packets. set to 0 to disable.
 	 * @param handler the consumer to give the received {@link JsonElement}s and the
-	 *                senders {@link INetAddress} to.
+	 *                senders {@link InetAddress} to.
 	 */
 	public Receiver(int udpPort, int tcpPort, BiConsumer<JsonElement, InetAddress> handler) {
 		if (udpPort > 0) {

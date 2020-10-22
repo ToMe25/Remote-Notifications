@@ -24,7 +24,7 @@ public abstract class AbstractListener implements Runnable {
 	 * 
 	 * @param threadName     the name to use for the thread running this listener.
 	 * @param receivehandler the consumer to give the received {@link JsonElement}s
-	 *                       and the senders {@link INetAddress} to.
+	 *                       and the senders {@link InetAddress} to.
 	 */
 	public AbstractListener(String threadName, BiConsumer<JsonElement, InetAddress> receivehandler) {
 		thread = new Thread(this, threadName);
@@ -63,7 +63,7 @@ public abstract class AbstractListener implements Runnable {
 		close();
 		if (wait) {
 			try {
-				thread.join();
+				thread.join(100);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

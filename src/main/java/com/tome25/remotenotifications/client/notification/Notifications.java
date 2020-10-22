@@ -14,7 +14,7 @@ public enum Notifications {
 	DIALOG_LIGHT_FRAMELESS(DialogNotification.LIGHT_FRAMELESS, "Dialog_light_frameless"),
 	DIALOG_DARK_FRAMELESS(DialogNotification.DARK_FRAMELESS, "Dialog_dark_frameless"),
 	DIALOG_LIGHT_FRAMED(DialogNotification.LIGHT_FRAMED, "Dialog_light_framed"),
-	DIALOG_DARK_FRAMED(DialogNotification.DARK_FRAMED, "Dialog_dark_framed");
+	DIALOG_DARK_FRAMED(DialogNotification.DARK_FRAMED, "Dialog_dark_framed"), DUMMY(LogNotification.INSTANCE, "Dummy");
 
 	private final INotification notification;
 	private final String name;

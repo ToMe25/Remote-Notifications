@@ -1,5 +1,7 @@
 package com.tome25.remotenotifications.client.config;
 
+import java.io.File;
+
 import com.tome25.remotenotifications.config.ConfigHandler;
 import com.tome25.remotenotifications.network.UDPTCPAddress;
 import com.tome25.utils.json.JsonArray;
@@ -43,12 +45,22 @@ public class ClientConfig extends ConfigHandler {
 
 	private boolean confirmExit;
 
+	/**
+	 * Creates a new client config handler.
+	 * 
+	 * @param rootDir the directory in which to create the config directory storing
+	 *                all the config files for this config handler.
+	 */
+	public ClientConfig(File rootDir) {
+		super(rootDir);
+	}
+
 	@Override
 	public void initConfig() {
 		getConfig().addConfig("client.cfg", NOTIFICATION_STYLE, "Dialog_dark_frameless",
 				"The style of notification you want to see when receiving some notification to display.",
 				"Valid Options are: TrayIcon_none, TrayIcon_info, TrayIcon_warning, TrayIcon_error,",
-				"Dialog_light_frameless, Dialog_dark_frameless, Dialog_light_framed, Dialog_dark_framed.");
+				"Dialog_light_frameless, Dialog_dark_frameless, Dialog_light_framed, Dialog_dark_framed, Dummy.");
 		getConfig().addConfig("client.cfg", NOTIFICATION_TIME, 10,
 				"Some notification styles have a limited lifetime after which they dissappear, this setting controls that time.",
 				"In seconds. Set to 0 to stop it from disappearing by itself.");

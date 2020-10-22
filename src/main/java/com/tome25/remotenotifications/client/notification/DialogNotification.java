@@ -156,7 +156,9 @@ public enum DialogNotification implements INotification {
 			frame.setVisible(true);
 			PopupMenu popup = PopupManager.createPopup();
 			frame.add(popup);
-			frame.addMouseListener(new PopupListener(popup));
+			PopupListener popupListener = new PopupListener(popup);
+			frame.addMouseListener(popupListener);
+			messageArea.addMouseListener(popupListener);
 			if (NotificationHandler.getNotificationTime() > 0) {
 				try {
 					Thread.sleep(NotificationHandler.getNotificationTime() * 1000);
