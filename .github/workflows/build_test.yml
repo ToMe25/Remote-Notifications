@@ -32,6 +32,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: ${{ matrix.java }}
+        settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Build with Maven
       id: build
