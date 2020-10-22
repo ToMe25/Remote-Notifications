@@ -53,7 +53,7 @@ jobs:
 
     - name: Build with Maven
       id: build
-      run: mvn -B package --file pom.xml
+      run: mvn -B package -s $GITHUB_WORKSPACE/settings.xml --file pom.xml
 
     - name: Move artifacts into repository
       id: artifacts_move
