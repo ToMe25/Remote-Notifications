@@ -131,7 +131,9 @@ public class ClientServerTest {
 		lock.lock();
 		con.awaitNanos(1000000000);
 		lock.unlock();
-		String clientsConfig = "[{\"tcp\":4002,\"udp\":3002,\"addr\":\"localhost\"}]";
+		String clientsConfig = String.format("[{\"addr\":\"%s\",\"tcp\":4002,\"udp\":3002}]",
+				InetAddress.getByName("localhost").getHostName());// for some reason getLocalHost returns a different
+																	// result, that can't be used here.
 		assertEquals(JsonParser.parseString(clientsConfig), conf);
 		// test receiving notification requests via udp
 		server.clearClients();
@@ -181,7 +183,9 @@ public class ClientServerTest {
 		lock.lock();
 		con.awaitNanos(1000000000);
 		lock.unlock();
-		assertEquals(JsonParser.parseString("[{\"addr\": \"localhost\", \"tcp\": 3005, \"udp\": 4005}]"), conf);
+		assertEquals(JsonParser.parseString("[{\"addr\": \"" + InetAddress.getByName("localhost").getHostName()
+				+ "\", \"tcp\": 3005, \"udp\": 4005}]"), conf);// for some reason getLocalHost returns a different
+																// result, that can't be used here.
 		// test udp notification request
 		server.clearClients();
 		Thread.sleep(50);

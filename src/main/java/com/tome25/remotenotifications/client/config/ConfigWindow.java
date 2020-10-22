@@ -3,6 +3,7 @@ package com.tome25.remotenotifications.client.config;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -64,6 +65,9 @@ public class ConfigWindow {
 	 * Initializes this configs window.
 	 */
 	private void initWindow() {
+		if (GraphicsEnvironment.isHeadless()) {
+			return;
+		}
 		window = new JFrame("Remote-Notifications-Config");
 		window.setIconImage(IconHandler.getLogoImage());
 		JPanel contentPane = new JPanel();
