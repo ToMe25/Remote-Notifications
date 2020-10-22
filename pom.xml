@@ -5,7 +5,7 @@
 
   <groupId>com.tome25</groupId>
   <artifactId>remote-notifications</artifactId>
-  <version>1.0.38</version>
+  <version>1.0.39</version>
 
   <packaging>jar</packaging>
   <name>Remote-Notifications</name>
