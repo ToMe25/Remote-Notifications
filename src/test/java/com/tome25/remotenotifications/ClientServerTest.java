@@ -47,7 +47,7 @@ public class ClientServerTest {
 		final Condition con = lock.newCondition();
 		final File testDir = tempDir.newFolder("testClient");
 		final JsonObject notif = new JsonObject();
-		final Client client = new Client(testDir, 3003, 4003);
+		final Client client = new Client(testDir, 4003, 3003);
 		NotificationHandler.setNotification(new TestNotification((h, m) -> {
 			notif.put("header", h);
 			notif.put("message", m);
@@ -55,7 +55,7 @@ public class ClientServerTest {
 			con.signal();
 			lock.unlock();
 		}));
-		Socket tcpSocket = new Socket(InetAddress.getLocalHost(), 4003);
+		Socket tcpSocket = new Socket(InetAddress.getLocalHost(), 3003);
 		OutputStream tcpOut = tcpSocket.getOutputStream();
 		String notification = "{\"header\": \"Header\", \"message\": \"Test Message\"}";
 		tcpOut.write(notification.getBytes());
@@ -69,7 +69,7 @@ public class ClientServerTest {
 		notification = "{\"header\": \"Test Header\", \"message\": \"Message\"}";
 		DatagramSocket udpSocket = new DatagramSocket();
 		DatagramPacket udpPacket = new DatagramPacket(notification.getBytes(), notification.getBytes().length,
-				InetAddress.getLocalHost(), 3003);
+				InetAddress.getLocalHost(), 4003);
 		udpSocket.send(udpPacket);
 		udpSocket.close();
 		lock.lock();
@@ -81,7 +81,7 @@ public class ClientServerTest {
 		NotificationHandler.setNotification("Dummy");
 		LogNotification.LOGGER.addHandler(new TestHandler(bOut));
 		notification = "{\"header\": \"Test Header\", \"message\": \"Test Message\"}";
-		tcpSocket = new Socket(InetAddress.getLocalHost(), 4003);
+		tcpSocket = new Socket(InetAddress.getLocalHost(), 3003);
 		tcpOut = tcpSocket.getOutputStream();
 		tcpOut.write(notification.getBytes());
 		tcpOut.flush();
@@ -107,8 +107,8 @@ public class ClientServerTest {
 		final File testDir = tempDir.newFolder("testServer");
 		final JsonArray conf = new JsonArray();
 		final Server server = new Server(testDir);
-		server.getConfig().setConfig(ServerConfig.UDP_PORT, 3002);
-		server.getConfig().setConfig(ServerConfig.TCP_PORT, 4002);
+		server.getConfig().setConfig(ServerConfig.UDP_PORT, 4002);
+		server.getConfig().setConfig(ServerConfig.TCP_PORT, 3002);
 		server.getConfig().registerUpdateHandler(cfg -> {
 			JsonArray clients = cfg.getConfig(ServerConfig.CLIENTS);
 			conf.clear();
@@ -122,16 +122,16 @@ public class ClientServerTest {
 		server.clearClients();
 		Thread.sleep(50);
 		assertEquals(new JsonArray(), conf);
-		Socket tcpSocket = new Socket("localhost", 4002);
+		Socket tcpSocket = new Socket("localhost", 3002);
 		OutputStream tcpOut = tcpSocket.getOutputStream();
-		String request = "{\"tcp\":4002,\"udp\"3002}";
+		String request = "{\"tcp\":3002,\"udp\"4002}";
 		tcpOut.write(request.getBytes());
 		tcpOut.flush();
 		tcpSocket.close();
 		lock.lock();
 		con.awaitNanos(1000000000);
 		lock.unlock();
-		String clientsConfig = String.format("[{\"addr\":\"%s\",\"tcp\":4002,\"udp\":3002}]",
+		String clientsConfig = String.format("[{\"addr\":\"%s\",\"tcp\":3002,\"udp\":4002}]",
 				InetAddress.getByName("localhost").getHostName());// for some reason getLocalHost returns a different
 																	// object that can't be used here.
 		assertEquals(JsonParser.parseString(clientsConfig), conf);
@@ -141,7 +141,7 @@ public class ClientServerTest {
 		assertEquals(new JsonArray(), conf);
 		DatagramSocket udpSocket = new DatagramSocket();
 		DatagramPacket udpPacket = new DatagramPacket(request.getBytes(), request.getBytes().length,
-				InetAddress.getByName("localhost"), 3002);// for some reason getLocalHost returns a different object
+				InetAddress.getByName("localhost"), 4002);// for some reason getLocalHost returns a different object
 															// that can't be used here.
 		udpSocket.send(udpPacket);
 		udpSocket.close();
