@@ -34,7 +34,7 @@ public class SenderTest {
 		});
 		sender.send("Header", "Test Message");
 		lock.lock();
-		con.await();
+		con.awaitNanos(1000000000);
 		lock.unlock();
 		tcpListener.stop();
 		assertEquals(JsonParser.parseString("{\"header\":\"Header\",\"message\":\"Test Message\"}"), received[0]);
@@ -47,7 +47,7 @@ public class SenderTest {
 		});
 		sender.send("Test Header", "Message");
 		lock.lock();
-		con.await();
+		con.awaitNanos(1000000000);
 		lock.unlock();
 		udpListener.stop();
 		assertEquals(JsonParser.parseString("{\"header\":\"Test Header\",\"message\":\"Message\"}"), received[0]);

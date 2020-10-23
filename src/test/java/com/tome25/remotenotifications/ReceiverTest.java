@@ -40,7 +40,7 @@ public class ReceiverTest {
 		tcpOut.flush();
 		tcpSocket.close();
 		lock.lock();
-		con.await();
+		con.awaitNanos(2000000000);
 		lock.unlock();
 		assertEquals(JsonParser.parseString(message), received[0]);
 		// test udp receiving
@@ -51,7 +51,7 @@ public class ReceiverTest {
 		udpSocket.send(udpPacket);
 		udpSocket.close();
 		lock.lock();
-		con.await();
+		con.awaitNanos(2000000000);
 		lock.unlock();
 		assertEquals(JsonParser.parseString(message), received[0]);
 	}
