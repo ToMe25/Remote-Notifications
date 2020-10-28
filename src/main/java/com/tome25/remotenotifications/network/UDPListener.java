@@ -7,6 +7,7 @@ import java.net.SocketException;
 import java.util.function.BiConsumer;
 
 import com.tome25.utils.json.JsonElement;
+import com.tome25.utils.json.JsonObject;
 import com.tome25.utils.json.JsonParser;
 
 /**
@@ -25,12 +26,12 @@ public class UDPListener extends AbstractListener {
 	 * Creates and starts a new UDPListener listening for udp packets on the
 	 * specified port.
 	 * 
-	 * @param port    the port to listen on.
-	 * @param receiveHandler the consumer to give the received {@link JsonElement}s and the
-	 *                senders {@link InetAddress} to.
+	 * @param port           the port to listen on.
+	 * @param receiveHandler the consumer to give the received {@link JsonElement}s
+	 *                       and the senders {@link InetAddress} to.
 	 * @throws SocketException if initializing the {@link DatagramSocket} fails.
 	 */
-	public UDPListener(int port, BiConsumer<JsonElement, InetAddress> receiveHandler) throws SocketException {
+	public UDPListener(int port, BiConsumer<JsonObject, InetAddress> receiveHandler) throws SocketException {
 		super("Remote-Notifications-UDP-Listener", receiveHandler);
 		this.port = port;
 		socket = new DatagramSocket(port);
@@ -43,8 +44,8 @@ public class UDPListener extends AbstractListener {
 		while (true) {
 			try {
 				socket.receive(packet);
-				JsonElement received = JsonParser.parseByteArray(packet.getData());
-				handler.accept(received, packet.getAddress());
+				JsonElement<?> received = JsonParser.parseByteArray(packet.getData());
+				handler.accept((JsonObject) received, packet.getAddress());
 			} catch (Exception e) {
 				if (!isRunning()) {
 					return;

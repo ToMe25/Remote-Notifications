@@ -14,7 +14,6 @@ import com.tome25.remotenotifications.network.Receiver;
 import com.tome25.remotenotifications.network.Sender;
 import com.tome25.remotenotifications.network.UDPTCPAddress;
 import com.tome25.utils.json.JsonArray;
-import com.tome25.utils.json.JsonElement;
 import com.tome25.utils.json.JsonObject;
 
 /**
@@ -217,7 +216,7 @@ public class Client {
 		}
 		JsonArray serversJson = config.getConfig(ClientConfig.SERVERS);
 		servers.clear();
-		serversJson.forEach(server -> servers.add(new UDPTCPAddress((JsonElement) server)));
+		serversJson.forEach(server -> servers.add(new UDPTCPAddress((JsonObject) server)));
 		if (sender != null) {
 			JsonObject request = new JsonObject("udp", udpPort);
 			request.put("tcp", tcpPort);

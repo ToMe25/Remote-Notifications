@@ -22,7 +22,7 @@ public class SenderTest {
 	@Test
 	public void testSender() throws IOException, ParseException, InterruptedException {
 		// test tcp sending
-		final JsonElement[] received = new JsonElement[1];
+		final JsonElement<?>[] received = new JsonElement<?>[1];
 		final ReentrantLock lock = new ReentrantLock();
 		final Condition con = lock.newCondition();
 		Sender sender = new Sender(Arrays.asList(new UDPTCPAddress("localhost", 4000, 3000)));

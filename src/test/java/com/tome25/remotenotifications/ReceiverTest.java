@@ -23,7 +23,7 @@ public class ReceiverTest {
 	@Test
 	public void testReceiver() throws IOException, ParseException, InterruptedException {
 		// test tcp receiving
-		final JsonElement[] received = new JsonElement[1];
+		final JsonElement<?>[] received = new JsonElement<?>[1];
 		final ReentrantLock lock = new ReentrantLock();
 		final Condition con = lock.newCondition();
 		@SuppressWarnings("unused")

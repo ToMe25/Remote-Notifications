@@ -320,7 +320,7 @@ public class ConfigWindow {
 
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
-			cfg.setConfig(name, (JsonElement) textField.getValue());
+			cfg.setConfig(name, (JsonElement<?>) textField.getValue());
 		}
 
 	}

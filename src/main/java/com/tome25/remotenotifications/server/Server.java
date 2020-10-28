@@ -10,7 +10,7 @@ import com.tome25.remotenotifications.network.Sender;
 import com.tome25.remotenotifications.network.UDPTCPAddress;
 import com.tome25.remotenotifications.server.config.ServerConfig;
 import com.tome25.utils.json.JsonArray;
-import com.tome25.utils.json.JsonElement;
+import com.tome25.utils.json.JsonObject;
 
 /**
  * The server main class. This class handles initializing all the server stuff.
@@ -81,7 +81,7 @@ public class Server {
 	private void updateConfig() {
 		JsonArray clientsJson = config.getConfig(ServerConfig.CLIENTS);
 		clients.clear();
-		clientsJson.forEach(client -> clients.add(new UDPTCPAddress((JsonElement) client)));
+		clientsJson.forEach(client -> clients.add(new UDPTCPAddress((JsonObject) client)));
 		synchronized (this) {
 			if (receiver != null) {
 				receiver.stop();

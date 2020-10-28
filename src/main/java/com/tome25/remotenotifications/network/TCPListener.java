@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.function.BiConsumer;
 
 import com.tome25.utils.json.JsonElement;
+import com.tome25.utils.json.JsonObject;
 import com.tome25.utils.json.JsonParser;
 
 /**
@@ -31,7 +32,7 @@ public class TCPListener extends AbstractListener {
 	 *                       and the senders {@link InetAddress} to.
 	 * @throws IOException if initializing the {@link ServerSocket} fails.
 	 */
-	public TCPListener(int port, BiConsumer<JsonElement, InetAddress> receiveHandler) throws IOException {
+	public TCPListener(int port, BiConsumer<JsonObject, InetAddress> receiveHandler) throws IOException {
 		super("Remote-Notifications-TCP-Listener", receiveHandler);
 		this.port = port;
 		socket = new ServerSocket(port);
@@ -56,8 +57,8 @@ public class TCPListener extends AbstractListener {
 				}
 				byte[] buffer = new byte[sIn.available()];
 				sIn.read(buffer);
-				JsonElement received = JsonParser.parseByteArray(buffer);
-				handler.accept(received, soc.getInetAddress());
+				JsonElement<?> received = JsonParser.parseByteArray(buffer);
+				handler.accept((JsonObject) received, soc.getInetAddress());
 				soc.close();
 			} catch (Exception e) {
 				if (!isRunning()) {

@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.function.BiConsumer;
 
 import com.tome25.utils.json.JsonElement;
+import com.tome25.utils.json.JsonObject;
 
 /**
  * The class receiving the Notifications to display.
@@ -24,7 +25,7 @@ public class Receiver {
 	 * @param handler the consumer to give the received {@link JsonElement}s and the
 	 *                senders {@link InetAddress} to.
 	 */
-	public Receiver(int udpPort, int tcpPort, BiConsumer<JsonElement, InetAddress> handler) {
+	public Receiver(int udpPort, int tcpPort, BiConsumer<JsonObject, InetAddress> handler) {
 		if (udpPort > 0) {
 			try {
 				udpListener = new UDPListener(udpPort, handler);

@@ -31,9 +31,9 @@ public class JsonFormat extends Format {
 	}
 
 	@Override
-	public JsonElement parseObject(String source, ParsePosition pos) {
+	public JsonElement<?> parseObject(String source, ParsePosition pos) {
 		try {
-			JsonElement result = JsonParser.parseString(source.substring(pos.getIndex()));
+			JsonElement<?> result = JsonParser.parseString(source.substring(pos.getIndex()));
 			pos.setIndex(pos.getIndex() + result.toString().length());
 			return result;
 		} catch (ParseException e) {

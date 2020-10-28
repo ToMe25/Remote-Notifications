@@ -14,7 +14,7 @@ import com.tome25.remotenotifications.utility.ArgumentParser;
 import com.tome25.remotenotifications.utility.DependencyChecker;
 import com.tome25.remotenotifications.utility.VersionChecker;
 import com.tome25.utils.json.JsonArray;
-import com.tome25.utils.json.JsonElement;
+import com.tome25.utils.json.JsonObject;
 import com.tome25.utils.json.JsonParser;
 import com.tome25.utils.lib.LibraryDownloader;
 import com.tome25.utils.lib.LibraryLoader;
@@ -72,7 +72,7 @@ public class RemoteNotifications {
 				}
 				if (clientsJson != null) {
 					server.clearClients();
-					clientsJson.forEach(client -> server.addClient(new UDPTCPAddress((JsonElement) client)));
+					clientsJson.forEach(client -> server.addClient(new UDPTCPAddress((JsonObject) client)));
 				}
 			}
 			if (arguments.containsKey("header") && arguments.containsKey("message")) {
@@ -107,7 +107,7 @@ public class RemoteNotifications {
 				}
 				if (serversJson != null) {
 					client.clearServers();
-					serversJson.forEach(server -> client.addServer(new UDPTCPAddress((JsonElement) server)));
+					serversJson.forEach(server -> client.addServer(new UDPTCPAddress((JsonObject) server)));
 				}
 			}
 		}

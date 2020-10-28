@@ -9,7 +9,6 @@ import java.net.SocketException;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.tome25.utils.json.JsonElement;
 import com.tome25.utils.json.JsonObject;
 
 /**
@@ -78,7 +77,7 @@ public class Sender {
 	 * @param message the message to send. should be
 	 *                '{"header":"HEADER","message":"MESSAGE"}'
 	 */
-	public void send(JsonElement message) {
+	public void send(JsonObject message) {
 		send(message, e -> {
 			if (!(e instanceof ConnectException)) {
 				e.printStackTrace();
@@ -93,7 +92,7 @@ public class Sender {
 	 *                         '{"header":"HEADER","message":"MESSAGE"}'
 	 * @param exceptionHandler a consumer that handles exceptions if any occur.
 	 */
-	public void send(JsonElement message, Consumer<Exception> exceptionHandler) {
+	public void send(JsonObject message, Consumer<Exception> exceptionHandler) {
 		send(message, exceptionHandler, receivers);
 	}
 
@@ -105,7 +104,7 @@ public class Sender {
 	 * @param exceptionHandler a consumer that handles exceptions if any occur.
 	 * @param clients          the clients to send the message to.
 	 */
-	public void send(JsonElement message, Consumer<Exception> exceptionHandler, List<UDPTCPAddress> clients) {
+	public void send(JsonObject message, Consumer<Exception> exceptionHandler, List<UDPTCPAddress> clients) {
 		clients.forEach(client -> send(message, exceptionHandler, client));
 	}
 
@@ -117,7 +116,7 @@ public class Sender {
 	 * @param exceptionHandler a consumer that handles exceptions if any occur.
 	 * @param client           the client to send the message to.
 	 */
-	public void send(JsonElement message, Consumer<Exception> exceptionHandler, UDPTCPAddress client) {
+	public void send(JsonObject message, Consumer<Exception> exceptionHandler, UDPTCPAddress client) {
 		if (client.getTcpPort() > 0) {
 			try {
 				Socket tcpSocket = new Socket(client.getAddress(), client.getTcpPort());

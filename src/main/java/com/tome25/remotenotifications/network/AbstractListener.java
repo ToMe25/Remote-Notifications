@@ -5,6 +5,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.tome25.utils.json.JsonElement;
+import com.tome25.utils.json.JsonObject;
 
 /**
  * A abstract listener listening to some input and giving a {@link JsonElement}
@@ -16,7 +17,7 @@ import com.tome25.utils.json.JsonElement;
 public abstract class AbstractListener implements Runnable {
 
 	protected final Thread thread;
-	protected final BiConsumer<JsonElement, InetAddress> handler;
+	protected final BiConsumer<JsonObject, InetAddress> handler;
 	private boolean running = true;
 
 	/**
@@ -26,7 +27,7 @@ public abstract class AbstractListener implements Runnable {
 	 * @param receivehandler the consumer to give the received {@link JsonElement}s
 	 *                       and the senders {@link InetAddress} to.
 	 */
-	public AbstractListener(String threadName, BiConsumer<JsonElement, InetAddress> receivehandler) {
+	public AbstractListener(String threadName, BiConsumer<JsonObject, InetAddress> receivehandler) {
 		thread = new Thread(this, threadName);
 		thread.setDaemon(true);
 		handler = receivehandler;

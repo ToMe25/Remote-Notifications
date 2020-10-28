@@ -1,6 +1,5 @@
 package com.tome25.remotenotifications.network;
 
-import com.tome25.utils.json.JsonElement;
 import com.tome25.utils.json.JsonObject;
 
 /**
@@ -29,7 +28,12 @@ public class UDPTCPAddress {
 		this.tcpPort = tcpPort;
 	}
 
-	public UDPTCPAddress(JsonElement json) {
+	/**
+	 * Creates a new address object from the given json element.
+	 * 
+	 * @param json the json to get the properties for this address from.
+	 */
+	public UDPTCPAddress(JsonObject json) {
 		this.address = json.getString("addr");
 		this.udpPort = (int) json.get("udp");
 		this.tcpPort = (int) json.get("tcp");
