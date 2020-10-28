@@ -87,6 +87,9 @@ public class DependencyHandler {
 
 	/**
 	 * Checks whether the given library is at least at the required version number.
+	 * 
+	 * @param dep the dependency to check.
+	 * @return whether the given library is at least at the required version number.
 	 */
 	private static boolean checkDependency(Dependency dep) {
 		if (isLoaded(dep.getCheckClass())) {
