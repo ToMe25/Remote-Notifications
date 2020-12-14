@@ -15,6 +15,7 @@ import com.tome25.remotenotifications.network.Sender;
 import com.tome25.remotenotifications.network.UDPTCPAddress;
 import com.tome25.utils.json.JsonArray;
 import com.tome25.utils.json.JsonObject;
+import com.tome25.utils.lib.LibraryLoader;
 
 /**
  * The client main class. This class handles initializing all the client stuff.
@@ -23,9 +24,6 @@ import com.tome25.utils.json.JsonObject;
  *
  */
 public class Client {
-
-	private static final File CODE_SOURCE = new File(
-			Client.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 
 	private Receiver receiver;
 	private Sender sender;
@@ -40,7 +38,7 @@ public class Client {
 	 * Initializes a new Client.
 	 */
 	public Client() {
-		this(CODE_SOURCE.getParentFile());
+		this(LibraryLoader.getMainDir());
 	}
 
 	/**
@@ -59,7 +57,7 @@ public class Client {
 	 * @param tcpPort the tcp port to listen for notifications on.
 	 */
 	public Client(int udpPort, int tcpPort) {
-		this(CODE_SOURCE.getParentFile(), udpPort, tcpPort);
+		this(LibraryLoader.getMainDir(), udpPort, tcpPort);
 	}
 
 	/**
@@ -82,7 +80,7 @@ public class Client {
 	 *                notification instead of the selected notification.
 	 */
 	public Client(int udpPort, int tcpPort, boolean dummy) {
-		this(CODE_SOURCE.getParentFile(), udpPort, tcpPort, dummy);
+		this(LibraryLoader.getMainDir(), udpPort, tcpPort, dummy);
 	}
 
 	/**

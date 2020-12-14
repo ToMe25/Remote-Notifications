@@ -43,7 +43,7 @@
     <dependency>
       <groupId>com.tome25</groupId>
       <artifactId>tome25s-java-utilities</artifactId>
-      <version>1.0.218</version>
+      <version>1.0.226</version>
     </dependency>
   </dependencies>
 
@@ -58,8 +58,16 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M5</version>
+        <configuration>
+          <trimStackTrace>false</trimStackTrace>
+          <rerunFailingTestsCount>1</rerunFailingTestsCount>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
+        <version>3.2.0</version>
         <configuration>
           <archive>
             <manifest>

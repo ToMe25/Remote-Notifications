@@ -1,9 +1,5 @@
 package com.tome25.remotenotifications.utility;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.jar.JarFile;
-
 import com.tome25.utils.version.VersionControl;
 
 /**
@@ -102,25 +98,9 @@ public class VersionChecker {
 	 */
 	public static String getVersionString() {
 		if (versionString == null) {
-			File file = new File(VersionChecker.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-			JarFile jar = null;
-			if (file.isDirectory()) {
+			versionString = VersionControl.class.getPackage().getImplementationVersion();
+			if (versionString == null) {
 				versionString = "1.0";
-			} else {
-				try {
-					jar = new JarFile(file);
-				} catch (IOException e) {
-					e.printStackTrace();
-					versionString = "1.0";
-				}
-			}
-			if (!file.isDirectory()) {
-				try {
-					versionString = jar.getManifest().getMainAttributes().getValue("Implementation-Version");
-				} catch (Exception e) {
-					e.printStackTrace();
-					versionString = "1.0";
-				}
 			}
 			VersionControl.setVersionString("Remote-Notifications", versionString);
 		}

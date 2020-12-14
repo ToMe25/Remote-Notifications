@@ -3,15 +3,12 @@ package com.tome25.remotenotifications.client.utility;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-
-import com.tome25.utils.lib.JarExtractor;
 
 /**
  * This class is a Image handling Utility, that will load and cache the Images.
@@ -21,8 +18,6 @@ import com.tome25.utils.lib.JarExtractor;
  */
 public class IconHandler {
 
-	private static final File codeSource = new File(
-			IconHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 	private static Map<String, BufferedImage> images = new HashMap<String, BufferedImage>();
 
 	/**
@@ -51,15 +46,7 @@ public class IconHandler {
 		if (images.containsKey(name)) {
 			return images.get(name);
 		} else {
-			File image = new File(codeSource.getParent(), "RemoteNotifications.png");
-			if (!image.exists()) {
-				try {
-					JarExtractor.extractFileFromJar(codeSource, "RemoteNotifications.png");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			BufferedImage img = ImageIO.read(image);
+			BufferedImage img = ImageIO.read(IconHandler.class.getClassLoader().getResourceAsStream(name));
 			images.put(name, img);
 			return img;
 		}

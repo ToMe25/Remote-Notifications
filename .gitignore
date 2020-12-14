@@ -34,8 +34,5 @@ hs_err_pid*
 /target/
 settings.xml
 
-# Config file
-*.cfg
-
 # Custom
 ToMe25s-Java-Utilities-Download-Url.txt

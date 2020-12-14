@@ -11,6 +11,7 @@ import com.tome25.remotenotifications.network.UDPTCPAddress;
 import com.tome25.remotenotifications.server.config.ServerConfig;
 import com.tome25.utils.json.JsonArray;
 import com.tome25.utils.json.JsonObject;
+import com.tome25.utils.lib.LibraryLoader;
 
 /**
  * The server main class. This class handles initializing all the server stuff.
@@ -29,7 +30,7 @@ public class Server {
 	 * Initializes a new Server.
 	 */
 	public Server() {
-		this(new File(Server.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile());
+		this(LibraryLoader.getMainDir());
 	}
 
 	/**
