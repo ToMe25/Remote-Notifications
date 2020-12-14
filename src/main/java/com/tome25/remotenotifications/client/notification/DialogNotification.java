@@ -106,7 +106,7 @@ public enum DialogNotification implements INotification {
 			constraints.fill = GridBagConstraints.BOTH;
 			JLabel headingLabel = new JLabel(header);
 			try {
-				headingLabel.setIcon(IconHandler.getIconScaled("Remote-Notifications.png", 32, 32));
+				headingLabel.setIcon(IconHandler.getIconScaled("RemoteNotifications.png", 32, 32));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
