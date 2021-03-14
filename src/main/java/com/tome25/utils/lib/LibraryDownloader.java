@@ -1,3 +1,20 @@
+/*
+ * ToMe25s-Java-Utilities is a collection of common java utilities.
+ * Copyright (C) 2020-2021  ToMe25
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package com.tome25.utils.lib;
 
 import java.io.BufferedInputStream;
@@ -313,8 +330,7 @@ public class LibraryDownloader {
 			boolean makeExecutable) {
 		this.urls = urls;
 		if (target == null) {
-			target = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
-			target = new File(target.getParent(), "libs");
+			target = new File(LibraryLoader.getMainDir(), "libs");
 			targetDir = true;
 		}
 		this.target = target;
@@ -475,9 +491,8 @@ public class LibraryDownloader {
 	 */
 	public static boolean downloadThis(String defaultUrls, Consumer<Exception> exceptionHandler) {
 		LibraryDownloader downloader = new LibraryDownloader(
-				new File(new File(LibraryDownloader.class.getProtectionDomain().getCodeSource().getLocation().getPath())
-						.getParent(), "ToMe25s-Java-Utilities-Download-Url.txt"),
-				defaultUrls, true, true);
+				new File(LibraryLoader.getMainDir(), "ToMe25s-Java-Utilities-Download-Url.txt"), defaultUrls, true,
+				true);
 		return downloader.downloadFile();
 	}
 

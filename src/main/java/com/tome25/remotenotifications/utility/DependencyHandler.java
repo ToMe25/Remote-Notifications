@@ -165,7 +165,7 @@ public class DependencyHandler {
 			ProcessBuilder pb = new ProcessBuilder("java", "-jar", codeSource.getAbsolutePath(),
 					stringArrayToString(
 							ManagementFactory.getRuntimeMXBean().getInputArguments().toArray(new String[0])),
-					LibraryLoader.getMainArgs(), "-no-downloads");
+					stringArrayToString(LibraryLoader.getMainArgsArray()), "-no-downloads");
 			pb.inheritIO();
 			try {
 				pb.start();
