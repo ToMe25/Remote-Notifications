@@ -13,6 +13,10 @@ on:
   push:
     branches:
       - master
+    paths:
+      - src/main/**
+      - pom.xml
+      - .github/workflows/build.yml
 
 jobs:
   build:
@@ -38,7 +42,6 @@ jobs:
       id: tag_dry
       uses: mathieudutour/github-tag-action@v4.2
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
         dry_run: true # just calculate the new tag name to be used for other things, tag the new commit later, to make the new tag contain the new builds.
 
     - name: Increase build number
@@ -55,7 +58,7 @@ jobs:
       id: build
       run: mvn -B package -s $GITHUB_WORKSPACE/settings.xml --file pom.xml
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.MAVEN_READ_TOKEN }}
 
     - name: Move artifacts into repository
       id: artifacts_move

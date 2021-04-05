@@ -3,11 +3,7 @@
 
 name: Maven Build and Test
 
-on:
-  push:
-  pull_request:
-    branches:
-      - master
+on: [push, pull_request]
 
 jobs:
   run-tests:
@@ -24,6 +20,8 @@ jobs:
     - name: Checkout repository
       id: checkout
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: Set up JDK ${{ matrix.java }}
       id: java_setup
@@ -37,14 +35,14 @@ jobs:
       if: ${{ matrix.os != 'windows-latest' }}
       run: mvn -B package -s $GITHUB_WORKSPACE/settings.xml --file pom.xml
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.MAVEN_READ_TOKEN }}
 
     - name: Build with Maven(Windows)
       id: build_windows
       if: ${{ matrix.os == 'windows-latest' }}
       run: mvn -B package -s ${{ github.workspace }}\settings.xml --file pom.xml
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.MAVEN_READ_TOKEN }}
 
     - name: Upload artifacts
       id: artifacts_upload
